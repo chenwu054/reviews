@@ -2,6 +2,13 @@
 celebrity
 find the celebrity. If does not exist, return -1;
 otherwise return the index of the celebrity
+solution: i is index of potential celebrity, j is index of the next person to be tested.
+test person i and person j:
+if i knows j and j knows i -> neither of them is celebrity
+if i knows j and j does not know i -> i is replaced by j since j might be the celebrity
+if i does not know j and j knows i -> j increases since i might be the celebrity
+if i does not know j and j does not know i -> neither j or i is celebrity, both get new indices.
+last round to test the potential i, the celebrity index.
 */
 public static int findCelebrity(boolean[][] know){
 		if(know==null){
