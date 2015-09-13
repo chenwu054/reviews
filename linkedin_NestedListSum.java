@@ -85,3 +85,37 @@ public static int getWeight(List<Object> list){
 	}
 	return ret;
 }
+
+public int getReverse(List<Object> list) {
+	if(list == null || list.size() == 0) {
+		return 0;
+	}
+	Queue<Object> q = new LinkedList<Object>();
+	Queue<Object> next = new LinkedList<Object>();
+	Queue<Object> temp = null;
+	ArrayList<Integer> levels = new ArrayList<Integer>();
+	q.add(list);
+	while(!q.isEmpty()) {
+		int sum = 0;
+		while(!q.isEmpty()) {
+			Object cur = q.poll();
+			if(cur instanceof Integer) {
+				sum += (Integer)cur;
+			}
+			else if(cur instanceof List) {
+				for(Object o : (List<Object>)cur) {
+					next.add(o);
+				}
+			}
+		}
+		levels.add(sum);
+		temp = q;
+		q = next;
+		next =temp;
+	}
+	int sum = 0;
+	for(int i = 0; i < levels.size(); i++) {
+		sum += levels.get(i) * (1 + i);
+	}
+	return sum;
+}
