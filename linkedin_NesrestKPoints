@@ -1,0 +1,76 @@
+/*
+nearest top k points on a plane， 
+
+Solution: Max Heap;
+*/
+public class NearestKPoints {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Random r = new Random();
+		int range = 20;
+		Point p1 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p2 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p3 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p4 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p5 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p6 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p7 = new Point(r.nextInt(range),r.nextInt(range));
+		Point p8 = new Point(r.nextInt(range),r.nextInt(range));
+		List<Point> list = new ArrayList<Point>();
+		list.add(p1);
+		list.add(p2);
+		list.add(p3);
+		list.add(p4);
+		list.add(p5);
+		list.add(p6);
+		list.add(p7);
+		list.add(p8);
+		for(Point p : list) {
+			System.out.println(p);
+		}
+		System.out.println("==============");
+		List<Point> ret = nearestKPoints(list, 3, new Point(0,0));
+		for(Point p : ret) {
+			System.out.println(p);
+		}
+	}
+	public static int distance(Point a, Point b) {
+		return Math.abs(a.x - b.x) + Math.abs(b.y - a.y);
+	}
+	public static List<Point> nearestKPoints(List<Point> points, int k, Point point) {
+		PriorityQueue<Point> q = new PriorityQueue<Point>(k, new Comparator<Point>(){
+			@Override
+			public int compare(Point a, Point b) {
+				return b.distance - a.distance;
+			}
+		});
+		for(Point p : points) {
+			int dist = distance(p, point);
+			p.distance = dist;
+			q.add(p);
+			while(q.size() > k) {
+				q.poll();
+			}
+		}
+		List<Point> ret = new ArrayList<Point>();
+		for(Iterator<Point> it = q.iterator(); it.hasNext();) {
+			ret.add(it.next());
+		}
+		return ret;
+	}
+}
+class Point{
+	int x,y;
+	int distance;
+	public Point(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	public String toString(){
+		return "["+x+":"+y+"]:"+distance;
+	}
+}
