@@ -1,0 +1,32 @@
+/*
+
+第二题是Find the size of longest palindrome subset of an array，注意是subset
+而不是subarray。不能改变order。所以[1, 2, 2, 0, 1]的longest palindrome 
+subset是[1, 2, 2, 1]，应该返回4。
+当时想到可以选定array中的某一点，把array分成左右两个subarray，就是取一个中点
+把[1, 2, 2, 0, 1]分成[1, 2]和[2, 0, 1]两个subarray，然后把[2, 0, 1]reverse 
+order变成[1, 0, 2]
+*/
+solution: dp
+
+public int longestPalindromeSubset(int[] a) {
+	if(a == null || a.length() == 0) {
+		return 0;
+	}
+	int n = a.length;
+	int[][] dp = new int[n][n];
+	for(int i = 0; i < n; i++) {
+		dp[i][i] = 1;
+	}
+	for(int i = 0; i < n - 1; i++) {
+		dp[i][i + 1] = a[i] == a[i + 1] ? 2 : 1;
+	}
+	for(int len = 3; len < n; len++) {
+		for(int i = 0; i < n - len; i++) {
+		// 4 choices: 1. uses front and end, 2. uses front ,3 uses end, 4. uses neither
+			dp[i][i + len] = (a[i] == a[i + len] ? 2 : 0) + dp[i + 1][i + len - 1];
+			dp[i][i + len] = Math.max(dp[i][i + len], Math.max(dp[i][i + len -1], dp[i + 1][i + len]));
+		}
+	}
+	return dp[0][n - 1];
+}
