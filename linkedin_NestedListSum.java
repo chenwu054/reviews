@@ -57,3 +57,31 @@ public class NestedListSum {
 		start[0] = idx;
 	}
 }
+
+public static int getWeight(List<Object> list){
+	if(list==null || list.size()==0){
+		throw new RuntimeException("invalid input");
+	}
+	Queue<Object> q = new LinkedList<Object>(list);
+	Queue<Object> next =  new LinkedList<Object>();
+	Queue<Object> temp = null;
+	Integer ret = 0;
+	int weight = 0;
+	Object cur = null;
+	while(q.size()>0){
+		weight++;
+		while(q.size()>0){
+			cur = q.poll();
+			if(cur instanceof List){
+				next.addAll((List)cur);
+			}
+			else{
+				ret += weight*(Integer)cur;
+			}
+		}
+		temp=next;
+		next=q;
+		q=temp;
+	}
+	return ret;
+}
