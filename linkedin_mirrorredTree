@@ -1,41 +1,76 @@
 /*
 
 */
-public TreeNode mirrorredTree(TreeNode root) {
-	if(root == null) {
-		throw new RuntimeException("Invalid Input");
+public class MirrorredTree {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		TreeNode node1 = new TreeNode(1);
+		TreeNode node2 = new TreeNode(2);
+		TreeNode node3 = new TreeNode(3);
+		TreeNode node4 = new TreeNode(4);
+		TreeNode node5 = new TreeNode(5);
+		node3.left = node2;
+		node2.left = node1;
+		node3.right = node5;
+		node5.left = node4;
+		inorderPrintTree(node3);
+		System.out.println();
+		TreeNode root = mirrorredTree(node3);
+		inorderPrintTree(root);
 	}
-	TreeNode newRoot = new TreeNode(root.val);
-	Queue<TreeNode> queue = new LinkedList<TreeNode>();
-	Queue<TreeNode> next = new LinkedList<TreeNode>();
-	Queue<TreeNode> temp = null;
-	Queue<TreeNode> mQueue = new LinkedList<TreeNode>();
-	Queue<TreeNode> mNext = new LinkedList<TreeNode>();
-	queue.offer(root);
-	mQueue.offer(newRoot);
-	while(!queue.empty()) {
-		while(!queue.empty()) {
-			TreeNode cur = queue.poll();
-			TreeNode mCur = mQueue.poll();
-			if(cur.left != null) {
-				TreeNode newRight = new TreeNode(cur.left.val);
-				mCur.right = newRight;
-				next.offer(cur.left);
-				mNext.offer(newRight);
-			}
-			if(cur.right != null) {
-				TreeNode newLeft = new TreeNode(cur.right.val);
-				mCur.left = new Left;
-				next.offer(cur.right);
-				mNext.offer(newLeft);
-			}
+	
+	public static void inorderPrintTree(TreeNode root) {
+		if(root == null) {
+			return;
 		}
-		temp = queue;
-		queue = next;
-		next = temp;
-		temp = mQueue;
-		mQueue = mNext;
-		mNext = temp;
+		if(root.left != null) {
+			inorderPrintTree(root.left);
+		}
+		System.out.print(root.val + " ");
+		if(root.right != null) {
+			inorderPrintTree(root.right);
+		}
+	} 
+	public static TreeNode mirrorredTree(TreeNode root) {
+		if(root == null) {
+			throw new RuntimeException("Invalid Input");
+		}
+		TreeNode newRoot = new TreeNode(root.val);
+		Queue<TreeNode> queue = new LinkedList<TreeNode>();
+		Queue<TreeNode> next = new LinkedList<TreeNode>();
+		Queue<TreeNode> temp = null;
+		Queue<TreeNode> mQueue = new LinkedList<TreeNode>();
+		Queue<TreeNode> mNext = new LinkedList<TreeNode>();
+		queue.offer(root);
+		mQueue.offer(newRoot);
+		while(!queue.isEmpty()) {
+			while(!queue.isEmpty()) {
+				TreeNode cur = queue.poll();
+				TreeNode mCur = mQueue.poll();
+				if(cur.left != null) {
+					TreeNode newRight = new TreeNode(cur.left.val);
+					mCur.right = newRight;
+					next.offer(cur.left);
+					mNext.offer(newRight);
+				}
+				if(cur.right != null) {
+					TreeNode newLeft = new TreeNode(cur.right.val);
+					mCur.left = newLeft;
+					next.offer(cur.right);
+					mNext.offer(newLeft);
+				}
+			}
+			temp = queue;
+			queue = next;
+			next = temp;
+			temp = mQueue;
+			mQueue = mNext;
+			mNext = temp;
+		}
+		return newRoot;
 	}
-	return newRoot;
 }
