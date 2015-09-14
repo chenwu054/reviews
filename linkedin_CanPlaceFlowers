@@ -1,0 +1,46 @@
+/*
+public boolean canPlaceFlowers(List<Boolean> flowerbed, int numberToPlace)
+如果flowerbed当中为true，说明已经栽过花了，附近两个不能再栽花。
+numberToPlace代表想再栽多少花到flowerbed里。让return是不是还能栽那么多谢花进去。
+*/
+public class CanPlaceFlowers {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int[] a = {1,0,0,1,0,0,1,0,0};
+//		int[] a = {1,0,0,0,0,0,1,0,0};
+		List<Boolean> list = new ArrayList<Boolean>();
+		for(int i : a) {
+			list.add(i>0);
+		}
+		System.out.println(canPlaceFlowers(list,2));
+	}
+	public static boolean canPlaceFlowers(List<Boolean> flowerbed, int numberToPlace) {
+		// can place flower next the flower just placed?
+		int tot = 0;
+		Iterator<Boolean> it = flowerbed.iterator();
+		if(!it.hasNext()){
+			return numberToPlace < 1;
+		}
+		Boolean cur = it.next();
+		Boolean last = null;
+		Boolean next = null;
+		while(it.hasNext()) {
+			next = it.next();
+			if(!cur && (last == null || !last) && !next) {
+				tot++;
+				cur = true;
+			}
+			last = cur;
+			cur = next;
+		}
+		if(!cur && (last == null || !last)) {
+			cur = true;
+			tot++;
+		}
+		return tot >= numberToPlace;
+	}
+}
