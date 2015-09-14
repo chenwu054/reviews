@@ -1,0 +1,41 @@
+/*
+
+*/
+public TreeNode mirrorredTree(TreeNode root) {
+	if(root == null) {
+		throw new RuntimeException("Invalid Input");
+	}
+	TreeNode newRoot = new TreeNode(root.val);
+	Queue<TreeNode> queue = new LinkedList<TreeNode>();
+	Queue<TreeNode> next = new LinkedList<TreeNode>();
+	Queue<TreeNode> temp = null;
+	Queue<TreeNode> mQueue = new LinkedList<TreeNode>();
+	Queue<TreeNode> mNext = new LinkedList<TreeNode>();
+	queue.offer(root);
+	mQueue.offer(newRoot);
+	while(!queue.empty()) {
+		while(!queue.empty()) {
+			TreeNode cur = queue.poll();
+			TreeNode mCur = mQueue.poll();
+			if(cur.left != null) {
+				TreeNode newRight = new TreeNode(cur.left.val);
+				mCur.right = newRight;
+				next.offer(cur.left);
+				mNext.offer(newRight);
+			}
+			if(cur.right != null) {
+				TreeNode newLeft = new TreeNode(cur.right.val);
+				mCur.left = new Left;
+				next.offer(cur.right);
+				mNext.offer(newLeft);
+			}
+		}
+		temp = queue;
+		queue = next;
+		next = temp;
+		temp = mQueue;
+		mQueue = mNext;
+		mNext = temp;
+	}
+	return newRoot;
+}
