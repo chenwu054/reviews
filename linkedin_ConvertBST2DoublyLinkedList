@@ -1,0 +1,32 @@
+/*
+ConvertBST2DoublyLinkedList
+*/
+public ListNode convertBST2DoubleLinkedList(TreeNode root) {
+	if(root == null) {
+		return null;
+	}
+	ListNode head = new ListNode(0);
+	Stack<TreeNode> k = new Stack<TreeNode>();
+	k.push(root);
+	ListNode newNode = null;
+	while(k.peek().left != null) {
+		k.push(k.peek().left);
+	}
+	ListNode node = head;
+	while(!k.empty()) {
+		TreeNode cur = k.pop();
+		if(cur.right != null){
+			k.push(cur.right);
+			while(k.peek().left != null) {
+				k.push(k.peek().left);
+			}
+		}
+		newNode = new ListNode(cur.val);
+		node.next = newNode;
+		newNode.prev = node;
+		node = newNode;
+	}
+	node = head.next;
+	node.prev = null;
+	return node;
+}
