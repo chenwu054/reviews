@@ -1,0 +1,64 @@
+/*
+Stack: pop, push, popMax
+
+*/
+public class MaxStack <T> {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	ListNode<T> head,tail;
+	TreeMap<T, ListNode<T>> map;
+	public MaxStack() {
+		head = new ListNode<T>(null);
+		map = new TreeMap<T, ListNode<T>>();
+	}
+	public void push(T val) {
+		ListNode<T> lastNode = new ListNode<T>(val);
+		tail.prev.next = lastNode;
+		lastNode.prev = tail.prev;
+		lastNode.next = tail;
+		tail.prev = lastNode;
+		map.put(val, lastNode);
+	}
+	public T peekMax() {
+		if(!map.isEmpty()) {
+			return map.lastKey();
+		}
+		return null;
+	}
+	public T popMax() { // log(N)
+		if(!map.isEmpty()) {
+			Entry<T, ListNode<T>> entry = map.lastEntry();
+			ListNode<T> node = entry.getValue();
+			node.prev.next = node.next;
+			node.next.prev = node.prev;
+			
+		}
+		return null;
+	}
+	public T pop() { // log(N)
+		if(!map.isEmpty()) {
+			ListNode<T> node = tail.prev;
+			map.remove(node.val);
+			node.prev.next = tail;
+			tail.prev = node.prev;
+			return node.val;
+		}
+		return null;
+	}
+	
+}
+class ListNode <T> {
+	T val;
+	ListNode<T> next,prev;
+	public ListNode(T val) {
+		next = null;
+		prev = null;
+		this.val = val;
+	}
+}
