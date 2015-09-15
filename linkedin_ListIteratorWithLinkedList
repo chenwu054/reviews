@@ -1,0 +1,91 @@
+/*
+
+*/
+public class NestedListIteratorLinkedList<T> implements Iterator<T> {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		// {{1,null,2,{}},3,{{}},{4,{5,6}}}
+		List<Object> list = new ArrayList<Object>();
+		List<Object> list1 = new ArrayList<Object>();
+		list1.add(1);
+		list1.add(null);
+		list1.add(2);
+		List<Object> list2 = new ArrayList<Object>();
+		list2.add(4);
+		List<Object> list3 = new ArrayList<Object>();
+		list3.add(5);
+		list3.add(6);
+		List<Object> list4 = new ArrayList<Object>();
+		List<Object> list5 = new ArrayList<Object>();
+		List<Object> list6 = new ArrayList<Object>();
+		list1.add(list6);
+		list.add(list1);
+		list.add(3);
+		list4.add(list5);
+		list.add(list4);
+		list2.add(list3);
+		list.add(list2);
+
+		NestedListIteratorLinkedList<Integer> it = new NestedListIteratorLinkedList<Integer>(list);
+		while (it.hasNext()) {
+			System.out.print(it.next() + " ");
+		}
+	}
+
+	LinkedList<Object> list;
+	Stack<Object> k;
+	public NestedListIteratorLinkedList(List<Object> l) {
+		list = new LinkedList<Object>();
+		k = new Stack<Object>();
+		for(Iterator<Object> it = l.iterator(); it.hasNext();) {
+			Object cur = it.next();
+			if(cur != null) {
+				list.add(cur);
+			}
+		}
+	}
+
+	@Override
+	public boolean hasNext() {
+		while(!list.isEmpty() && list.peekFirst() instanceof List) {
+			List<Object> cur = (List<Object>) list.pollFirst();
+			for(Object o : cur) {
+				if(o != null) {
+					k.push(o); // important to maintain the order
+				}
+			}
+			while(!k.isEmpty()) {
+				list.offerFirst(k.pop()); // pop back to list
+			}
+		}
+		return !list.isEmpty();
+	}
+
+	@Override
+	public T next() {
+		if(hasNext()) {
+			return (T) list.pollFirst();
+		}
+		return null;
+	}
+
+	@Override
+	public void remove() {
+		while(!list.isEmpty() && list.peekLast() instanceof List) {
+			List<Object> cur = (List<Object>) list.pollLast();
+			for(Object o : cur) {
+				if(o != null) {
+					list.offerLast(o);
+				}
+			}
+		}
+		if(!list.isEmpty()) {
+			list.pollLast();
+		}
+	}
+}
