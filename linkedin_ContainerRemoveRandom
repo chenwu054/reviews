@@ -1,0 +1,76 @@
+/*
+2.special container add/remove/removeRandom at O(1): array + hashmap
+
+*/
+package linkedin;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+public class Container<T> {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Container<Integer> a = new Container<Integer>();
+		for(int i = 0; i < 10; i++) {
+			a.add(i);
+		}
+		
+		for(int i = 0; i < 10; i++) {
+			Integer s = a.removeRandom();
+			System.out.print(s + " ");
+		}
+		
+	}
+
+	Random r;
+	ArrayList<T> array;
+	Map<T, Integer> map;
+
+	public Container() {
+		r = new Random();
+		array = new ArrayList<T>();
+		map = new HashMap<T, Integer>();
+	}
+
+	// assume duplicates are not
+	public void add(T newValue) {
+		array.add(newValue);
+		map.put(newValue, array.size() - 1);
+	}
+
+	private void swap(int i, int j) {
+		T temp = array.get(i);
+		array.set(i, array.get(j));
+		array.set(j, temp);
+	}
+
+	public void remove(T value) {
+		if (map.containsKey(value)) {
+			int index = map.get(value);
+			swap(index, array.size() - 1); // swap with the last one
+			array.remove(array.size() - 1); // remove the last one
+			map.remove(value); // remove in map
+		}
+	}
+
+	public T removeRandom() {
+		if (array.size() == 0) {
+			return null;
+		}
+		int len = array.size();
+		int index = r.nextInt(len);
+		T last = array.get(len - 1);
+		map.put(last, index); // set the last index
+		swap(index, len - 1);
+		T ret = array.get(len - 1);
+		array.remove(len - 1); // delete in array
+		map.remove(ret); // delete in map
+		return ret;
+	}
+}
