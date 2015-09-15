@@ -1,0 +1,48 @@
+/*
+boolean canIWin(int maxNum, int target)，从1,2...maxNum的数组里两个玩家轮流选数，第一个达到sum>=target的玩家获胜，问如何判断先选的玩家能获胜。
+能想到的就是先求总和sum, 如果sum < target 无解, false
+如果sum == target, 根据数组的长度判断，奇数个则true偶数个false
+然后是sum>target, 双方的目标是要至少保证选完数x后target-x > 数组里留下的最大数，
+然后递归，根据回合数的奇偶判断是true还是false。然后就这个逻辑不知道该怎么实现了。
+
+是看两个人的和 >= target, 不只是一个人的sum
+*/
+public class CanIWin {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int[] a = {1,2,3,4};
+		System.out.println(canIWin(a, 8));
+	}
+	public static boolean canIWin(int[] a, int target) {
+		int tot = 0;
+		for(int i : a) {
+			tot += i;
+		}
+		if(tot < target) {
+			return false;
+		}
+		boolean[] used = new boolean[a.length];
+		return recursiveCanIWin(a, used, target);
+	}
+	public static boolean recursiveCanIWin(int[] a, boolean[] used, int target) {
+		if(target <= 0) {
+			return false;
+		}
+		for(int i = 0; i < used.length; i++) {
+			if(!used[i]) {
+				used[i] = true;
+				boolean ret = recursiveCanIWin(a, used, target - a[i]);
+				if(!ret) {
+					used[i] = false;
+					return true;
+				}
+				used[i] = false;
+			}
+		}
+		return false;
+	}
+}
