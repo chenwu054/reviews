@@ -1,0 +1,110 @@
+/*
+1. 给定一个string，判断能否用这个string来组成一个palindrome。e.g. 'uber' -->
+False, 'aab' --> True, 'carecra' --> True
+
+2. Follow up: 给出所有能够组成的palindrome，因为时间原因可以不用担心
+duplicates。
+
+solution: recursive, choose 1 unique character at a time.
+*/
+public class PermutatePalindrome {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String a = "abcba";
+		boolean ret = canBePalindrome(a);
+		System.out.println(ret);
+		List<String> list = getPalindromes(a);
+		for(String str : list) {
+			System.out.println(str);
+		}
+	}
+	public static boolean canBePalindrome(String str) {
+	    if(str == null || str.length() == 0) {
+	      return false;
+	    }
+	    Map<Character, Integer> map = new HashMap<Character, Integer>();
+	    for(int i = 0; i < str.length(); i++) {
+	      char c = str.charAt(i);
+	      if(!map.containsKey(c)) {
+	        map.put(c, 1);
+	      }
+	      else{
+	        map.put(c, map.get(c) + 1);
+	      }
+	    }
+	    boolean hasSingle = false;
+	    for(Entry<Character, Integer> entry : map.entrySet()) {
+	      if(entry.getValue() % 2 == 1) {
+	        if(hasSingle) {
+	          return false;
+	        }
+	        hasSingle = true;
+	      }
+	    }
+	    return true;
+	}
+	public static List<String> getPalindromes(String str) {
+	  List<String> list = new ArrayList<String>();
+	  if(str == null) {
+	    return list;
+	  }
+	  if(str.length() == 1) {
+	    list.add(str);
+	    return list;
+	  }
+	  Map<Character, Integer> map = new HashMap<Character, Integer>();
+	  for(int i = 0; i < str.length(); i++) {
+	    char c = str.charAt(i);
+	    if(!map.containsKey(c)) {
+	      map.put(c, 1);
+	    }
+	    else{
+	      map.put(c, map.get(c) + 1);
+	    }
+	  }
+	  Character single = null;
+	  ArrayList<Character> letters = new ArrayList<Character>();
+	  ArrayList<Integer> num = new ArrayList<Integer>();
+	  for(Entry<Character, Integer> entry : map.entrySet()) {
+	    if(entry.getValue() % 2 == 1) {
+	      if(single != null) {
+	        return list;
+	      }
+	      single = entry.getKey();
+	    }
+	    else {
+	      letters.add(entry.getKey());
+	      num.add(entry.getValue() / 2);
+	    }
+	  }
+	  StringBuilder left = new StringBuilder();
+	  recursiveBuildPalindrome(letters, num, left, single, list);
+	  return list;
+	}
+	public static void recursiveBuildPalindrome(ArrayList<Character> letters, ArrayList<Integer> num, StringBuilder left, Character single, List<String> ret) {
+	  boolean isLast = true;
+	  for(int i = 0; i < letters.size(); i++) {
+	    if(num.get(i) > 0) {
+	      left.append(letters.get(i));
+	      num.set(i, num.get(i) - 1);
+	      recursiveBuildPalindrome(letters, num, left, single, ret);
+	      left.deleteCharAt(left.length() - 1);
+	      num.set(i, num.get(i) + 1);
+	      isLast = false;
+	    }
+	  }
+	  if(isLast) {
+	    StringBuilder sb = new StringBuilder(left);
+	    if(single != null) {
+	      sb.append(single);
+	    }
+	    sb.append(left.reverse());
+	    left.reverse();
+	    ret.add(sb.toString());
+	  }
+	}
+}	
