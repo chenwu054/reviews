@@ -1,0 +1,60 @@
+/*
+
+*/
+public class NestedSum {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		List<Object> list = new ArrayList<Object>();
+		List<Object> l1 = new ArrayList<Object>();
+		List<Object> l2 = new LinkedList<Object>();
+		List<Object> l3 = new LinkedList<Object>();
+		l1.add(new Integer(1));
+		l1.add(new Integer(2));
+		l2.add(new Integer(2));
+		l3.add(new Integer(2));
+		l3.add(new Integer(1));
+		l2.add(l3);
+		list.add(l1);
+		list.add(new Integer(1));
+		list.add(l2);
+		int ret = getReverseNestedListSum(list);
+		System.out.println(ret);
+	}
+	public static int getReverseNestedListSum(List<Object> list) {
+		int ret = 0, temp = 0;
+		List<Object> cur = new ArrayList<Object>(list);
+		List<Object> next = new ArrayList<Object>();
+		List<Object> tempList = null;
+		List<Integer> levels = new ArrayList<Integer>();
+		while(!cur.isEmpty()) {
+			Iterator<Object> it = cur.iterator();
+			temp = 0;
+			while(it.hasNext()) {
+				Object obj = it.next();
+				if(obj instanceof List) {
+					Iterator<Object> nextIt = ((List<Object>)obj).iterator();
+					while(nextIt.hasNext()) {
+						next.add(nextIt.next());
+					}
+				}
+				else if(obj instanceof Integer) {
+					temp += (Integer)obj;
+				}
+			}
+			tempList = cur;
+			cur = next;
+			next = tempList;
+			next.clear();
+			levels.add(temp);
+		}
+		for(int i = 0; i < levels.size(); i++) {
+			System.out.println("level " + (i + 1) + ": " + levels.get(i));
+			ret += (i + 1) * levels.get(levels.size() - 1 - i);
+		}
+		return ret;
+	}
+}
