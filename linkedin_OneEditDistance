@@ -1,0 +1,43 @@
+/*
+
+*/
+public class OneEditDistance {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String s = "aeb";
+		String t = "aba";
+		boolean ret = isOneDistanceApart(s, t);
+		System.out.println(ret);
+	}
+	public static boolean isOneDistanceApart(String s, String t) {
+		if(s == null || t == null) {
+			throw new RuntimeException("Invalid input");
+		}
+		int n = s.length(), m = t.length();
+		if(Math.abs(n - m) > 1) {
+			return false;
+		}
+		if(m > n) {
+			return isOneDistanceApart(t, s);
+		}
+		boolean hasOneDiff = false;
+
+		for(int i = 0, j = 0; i < n && j < m; i++, j++) {
+			char cs = s.charAt(i), ct = t.charAt(j);
+			if(cs != ct) {
+				if(hasOneDiff) {
+					return false;
+				}
+				hasOneDiff = true;
+				if(m != n) {
+					j--;
+				}
+			}
+		}
+		return true;
+	}
+}
