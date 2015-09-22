@@ -1,0 +1,66 @@
+/*
+
+*/
+class ListNode {
+	int key;
+	ListNode prev, next, up, down;
+}
+public void flatten(ListNode head) {
+	if(head == null) {
+		throw new RuntimeException("Invalid Input");
+	}
+	ListNode node = head, last = null;
+	Queue<ListNode> q = new LinkedList<ListNode>();
+	while(node != null) {
+		q.offer(node);
+		node = node.next;
+	}
+	while(!q.isEmpty()) {
+		ListNode cur = q.poll();
+		ListNode upNode = q.up;
+		ListNode downNode = q.down;
+		while(upNode != null) {
+			q.offer(upNode);
+			upNode = upNode.next;
+		}
+		while(downNode != null) {
+			q.offer(downNode);
+			downNode = downNode.next;
+		}
+		cur.prev = last;
+		if(last != null) {
+			last.next = cur;
+		}
+		last = cur;
+	}
+}
+public void deflatten(ListNode head) {
+	if(head == null) {
+		throw new RuntimeException("Invalid Input");
+	}
+	Queue<ListNode> q = new LinkedList<ListNode>();
+	q.add(head);
+	while(!q.isEmpty()) {
+		ListNode cur = q.poll();
+		if(cur.up != null) {
+			if(cur.up.prev != null) {
+				cur.up.prev.next = null;
+			}
+			cur.up.prev = null;
+			q.add(cur.up);
+		}
+		if(cur.down != null) {
+			if(cur.down.prev != null) {
+				cur.down.prev.next = null;
+			}
+			cur.down.prev = null;
+			q.add(cur.down);
+		}
+		if(cur.next != null) {
+			q.add(cur.next);
+		}
+	}
+}
+
+
+
