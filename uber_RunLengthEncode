@@ -1,0 +1,57 @@
+public class RunLengthEncode {
+
+	/**
+	 * @param args
+	 * encode aaabbbccc to 4a3b3c, follow up what if 100c
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String a = "aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc";
+		String encode = encode(a);
+		String decode = decode(encode);
+		System.out.println(encode);
+		System.out.println(decode);
+		System.out.println(a.equals(decode));
+	}
+	public static String encode(String str) {
+		if(str == null || str.length() == 0) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		int num = 1;
+		for(int i = 1; i <= str.length(); i++) {
+			if(i == str.length() || str.charAt(i) != str.charAt(i - 1)) {
+				String numStr = String.valueOf(num);
+				for(int j = 0; j < numStr.length(); j++) {
+					sb.append((char)(numStr.charAt(j) - '0' + 'A'));
+				}
+				sb.append(str.charAt(i - 1));
+				num = 1;
+			}
+			else {
+				num++;
+			}
+		}
+		return sb.toString();
+	}
+	public static String decode(String str) {
+		if(str == null || str.length() == 0) {
+			return str;
+		}
+		int num = 0;
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < str.length(); i++) {
+			char ch = str.charAt(i);
+			if(ch >= 'a') {
+				while(num > 0) {
+					sb.append(ch);
+					num--;
+				}
+			}
+			else {
+				num = num * 10 + (ch - 'A');
+			}
+		}
+		return sb.toString();
+	}
+}
