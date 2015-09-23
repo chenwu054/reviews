@@ -7,6 +7,43 @@ boolean canIWin(int maxNum, int target)，从1,2...maxNum的数组里两个玩�
 
 是看两个人的和 >= target, 不只是一个人的sum
 */
+
+public boolean isWin(Set<Integer>chooseable, Integer target) {
+	if(chooseable == null || chooseable.isEmpty()) {
+		throw new RuntimeException("Invalid Input");
+	}
+	int n = chooseable.size();
+	int[] num = new int[n];
+	boolean[] used = new boolean[n];
+	int tot = 0;
+	int idx = 0;
+	for(Integer i : chooseable) {
+		num[idx++] = i;
+		tot += i;
+	}
+	if(tot < target) {
+		return false;
+	}
+	return canWin(idx, used, target, 0);
+}
+public boolean canWin(int[] num, boolean[] used, Integer target, Integer sum) {
+	if(sum >= target) {
+		return false;
+	}
+	for(int i = 0; i < num.length; i++) {
+		if(!used[i]) {
+			used[i] = true;
+			boolean next = canWin(num, used, target, sum + num[i]);
+			if(!next) {
+				used[i] = false;
+				return true;
+			}
+			used[i] = false;
+		}
+	}
+	return false;
+}
+
 public class CanIWin {
 
 	/**
