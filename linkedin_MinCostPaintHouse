@@ -1,0 +1,37 @@
+/*
+假设给一排n个房子paint，有m种不同颜色可选，相邻房子不能同色，给定一个mxn的
+cost matrix，求最小cost的染色方法。
+*/
+public int minCostPaintHouse(int[][] cost) {
+	if(cost == null || cost.length == 0 || cost[0].length < 1) {
+		throw RuntimeException("Invalid Input");
+	}
+	int n = cost.length, m = cost[0].length;
+	if(n > 1 && m <= 1) {
+		throw RuntimeException("Invalid Input");
+	}
+	int[] current = new int[m];
+	int[] last = new int[m];
+	int[] temp = null;
+	for(int i = 0; i < n; i++) {
+		for(int j = 0; j < m; j++) {
+			int min = ((j == 0) ? last[j + 1] : last[j - 1]);
+			for(int k = 0; k < m; k++) {
+				if(k == j) {
+					continue;
+				}
+				min = Math.min(min, last[k]);
+			}
+			min += cost[i][j];
+			current[i] = min;
+		}
+		temp = current;
+		current = last;
+		last = temp;
+	}
+	int ret = last[0];
+	for(int i : last) {
+		ret = Math.min(ret, i);
+	}
+	return ret;
+}
