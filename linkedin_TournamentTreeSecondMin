@@ -1,0 +1,42 @@
+/*
+Tournament tree 找secMin;
+. From 1point 3acres bbs
+Tournament tree 的定义是parent 是孩子node的最小值， 如下例 return 5
+                2
+              /  \
+            2    7
+          /  \    | \
+        5    2  8  7
+*/
+public TreeNode secMin(TreeNode root) {
+	if(root == null) {
+		return root;
+	}
+	TreeNode[] mins = new TreeNode[2];
+	mins[0] = root;
+	Queue<TreeNode> q = new LinkedList<TreeNode>();
+	q.add(root);
+	while(!q.isEmpty()) {
+		while(!q.isEmpty()) {
+			TreeNode cur = q.poll();
+			if(cur.val == mins[0].val) {
+				mins[0] = cur;
+			}
+			else if(mins[1] == null) {
+				mins[1] = cur;
+			}
+			else if(mins[1].val > cur.val) {
+				mins[1] = cur;
+			}
+		}
+		for(int i = 0; i < 2; i++) {
+			if(mins[i] != null && mins[i].left != null) {
+				q.add(mins[i].left);
+			}
+			if(mins[i] != null && mins[i].right != null) {
+				q.add(mins[i].right);
+			}
+		}
+	}
+	return mins[1];
+}
