@@ -21,7 +21,7 @@ public int longestPalindromeSubset(int[] a) {
 	for(int i = 0; i < n - 1; i++) {
 		dp[i][i + 1] = a[i] == a[i + 1] ? 2 : 1;
 	}
-	for(int len = 3; len < n; len++) {
+	for(int len = 2; len < n; len++) {
 		for(int i = 0; i < n - len; i++) {
 		// 4 choices: 1. uses front and end, 2. uses front ,3 uses end, 4. uses neither
 			dp[i][i + len] = (a[i] == a[i + len] ? 2 : 0) + dp[i + 1][i + len - 1];
