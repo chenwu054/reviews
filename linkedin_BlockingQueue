@@ -1,0 +1,105 @@
+/*
+thread safe block queue
+*/
+public class BlockQueue <T> {
+
+	/**
+	 * @param args
+	 */
+	ArrayList<T> queue;
+	int count, size, start, end;
+	Lock lock;
+	Condition fullCondition;
+	Condition emptyCondition;
+	static BlockQueue<String> q;
+	static Random r;
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		 q = new BlockQueue<String>(5);
+		 r = new Random();
+		 for(int i = 0; i < 5; i++) {
+			 Thread thread = new Thread(new Runnable() {
+				 @Override
+				 public void run() {
+					 while(true) {
+						 try{
+							 int key = r.nextInt(1000);
+							 q.add(key + "");
+							 System.out.println(Thread.currentThread().getName() + " adding key: " + key);
+							 Thread.sleep(key);
+						 }
+						 catch(Exception e) {
+							 System.out.println("!!! Exception is " + e);
+						 }
+					 }
+				 }
+			 });
+			 thread.start();
+		 }
+		 for(int i = 0; i < 5; i++) {
+			 Thread thread = new Thread(new Runnable() {
+				 @Override
+				 public void run() {
+					 while(true) {
+						 try{
+							 int key = r.nextInt(1000);
+							 String ret = q.poll();
+							 System.out.println(Thread.currentThread().getName() + " polled ret is " + ret);
+							 Thread.sleep(key);
+						 }
+						 catch(Exception e) {
+							 System.out.println("!!!Exception is " + e);
+						 }
+					 }
+				 }
+			 });
+			 thread.start();
+		 }
+		
+	}
+	public BlockQueue(int size) {
+		count = 0;
+		this.size = size;
+		start = 0;
+		end = 0;
+		lock = new ReentrantLock();
+		fullCondition = lock.newCondition();
+		emptyCondition = lock.newCondition();
+		queue = new ArrayList<T>();
+		for(int i = 0; i < size; i++) {
+			queue.add(null);
+		}
+	}
+	public void add(T val) throws InterruptedException{
+		lock.lock();
+		try {
+			while(size == count) {
+				System.out.println(Thread.currentThread().getName() + " is waiting for full condition");
+				fullCondition.await();
+			}
+			queue.set(start++, val);
+			start = start % size;
+			count++;			
+			emptyCondition.signal();
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+	public T poll() throws InterruptedException {
+		lock.lock();
+		try{
+			while(count == 0) {
+				System.out.println(Thread.currentThread().getName() + " is waiting for empty condition");
+				emptyCondition.await();
+			}
+			T ret = queue.get(end++);
+			end = end % size;
+			count--;
+			return ret;
+		}
+		finally{
+			lock.unlock();
+		}
+	}
+}
