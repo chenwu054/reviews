@@ -1,0 +1,85 @@
+
+public class Excel {
+	public static void main(String[] arg) {
+		
+	}
+	Map<Integer, Map<Integer, Cell>> sheet;
+	private final static int MAX_ROW_COUNT = 65000;
+	private final static int MAX_COL_COUNT = 65000;
+	public Excel() {
+		sheet = new HashMap<Integer, Map<Integer, Cell>>();
+	}
+	public void validateIndices(int row, int col) {
+		if(row < 0 || col < 0 || row >= MAX_ROW_COUNT || col >= MAX_COL_COUNT) {
+			throw new RuntimeException("Invalid index");
+		}
+	}
+	public void validateVal(String val) {
+		if(val == null) {
+			throw new RuntimeException("Invalid value");
+		}
+	}
+	public void addDependency(int row, int col, int dRow, int dCol) {
+		validateIndices(row, col);
+		validateIndices(dRow, dCol);
+		if(!sheet.containsKey(row) || !sheet.get(row).containsKey(col)) {
+			throw new RuntimeException("cell not found");
+		}
+		if(!sheet.containsKey(row) || !sheet.get(row).containsKey(col)) {
+			throw new RuntimeException("cell not found");
+		}
+		Cell cell = sheet.get(row).get(col);
+		if(cell.observers == null) {
+			cell.observers = new HashSet<Cell>();
+		}
+		cell.observers.add(sheet.get(dRow).get(dCol));
+		
+	}
+	public void insert(String val, int row, int col) {
+		validateIndices(row, col);
+		validateVal(val); 
+		if(!sheet.containsKey(row)) {
+			sheet.put(row, new HashMap<Integer, Cell>());
+		}
+		if(val != null) {
+			Cell newCell = sheet.get(row).get(col);
+			if(newCell == null) {
+				newCell = new Cell(val);
+				sheet.get(row).put(col, newCell);
+			}
+			else {
+				newCell.val = val;
+				Set<Cell> observers = sheet.get(row).get(col).observers;
+				if(observers != null) {
+					for(Cell cell : observers) {
+						cell.update(newCell);
+					}
+				}				
+			}
+		}
+		else if(sheet.containsKey(row)) {
+			sheet.get(row).remove(col);
+		}
+	}
+	public String get(int row, int col) {
+		validateIndices(row, col);
+		if(!sheet.containsKey(row) || !sheet.get(row).containsKey(col)) {
+			return null;
+		}
+		return sheet.get(row).get(col).val;
+	}
+}
+
+class Cell {
+	String val;
+	Set<Cell> observers;
+	public Cell(String s) {
+		 this.val = s;
+	}
+	public void update(Cell cell) {
+		System.out.println("cell is " + cell);
+	}
+}
+
+
+
