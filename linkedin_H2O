@@ -1,0 +1,94 @@
+/*
+
+*/
+public class H2O {
+	static H2O h;
+	static Random r;
+	public static void main(String[] arg) {
+		h = new H2O();
+		r = new Random();
+		for(int i = 0 ;i < 5; i++) {
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						while(true) {
+							int k = r.nextInt(1000);
+							h.H();
+							Thread.sleep(k);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			thread.start();
+		}
+		for(int i = 0; i < 3; i++) {
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						
+						while(true){
+							int k = r.nextInt(1000);
+							h.O();
+							Thread.sleep(k);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			
+			thread.start();
+		}
+	}
+
+	int hNum, oNum;
+	StringBuilder sb;
+	Lock lock;
+	Condition hCondition, oCondition;
+
+	public H2O() {
+		hNum = 0;
+		oNum = 0;
+		sb = new StringBuilder();
+		lock = new ReentrantLock();
+		hCondition = lock.newCondition();
+		oCondition = lock.newCondition();
+	}
+	public void H() throws InterruptedException {
+		lock.lock();
+		try{
+			while(oNum > 0 || hNum == 2) {
+				hCondition.await(); // waiting for hCondition
+			}
+			hNum++;
+			System.out.println(Thread.currentThread().getName() + "adding an H");
+			oCondition.signal(); // wake up all thread waiting on oCondition
+		}
+		finally {
+			lock.unlock();
+		}
+
+	}
+	public void O() throws InterruptedException {
+		lock.lock();
+		try{
+			while(hNum < 2 || oNum == 1) {
+				oCondition.await(); // waiting for hCondition
+			}
+			oNum++;
+			System.out.println(Thread.currentThread().getName() + " adding an O");
+			oNum = 0;
+			hNum = 0;
+			hCondition.signal(); // wake up all thread waiting on hCondition
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+}
