@@ -1,0 +1,22 @@
+/*
+两个人面我算法，要在电脑 上写code。
+题目大概是说一些公用的api在免费使用时都会有限制， 
+假设googlemap api有个限制每秒只能最多10次request，
+让我写一个wrapper function， 
+在这个wrapperfunction里调用3rdparty api,
+然后这个wrapperfunction 
+检测现如果过去1s内超出10次request就return false, otherwise return true.
+
+*/
+static LinkedList<Date> list;
+public static boolean wrapper() {
+    Date current = new Date();
+    while(!list.isEmpty() && date.getTime() - list.peekLast().getTime() > 1000) {
+        list.pollLast();
+    }
+    if(list.size() >= 10) {
+        return false;
+    }
+    list.offerFirst(date);
+    return true;
+}
