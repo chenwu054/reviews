@@ -1,0 +1,73 @@
+/*
+实现一个class提供以下操作：-google 1point3acres
+1. addInterval(int start, int end) - 加入一段interval
+2. getTotalCoverage() - 返回总共能够cover的时间.
+*/
+public class Intervals {
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Intervals it = new Intervals();
+		it.addInterval(new Interval(10, 15));
+		System.out.println(it.getTotalCoverage());
+		it.addInterval(new Interval(16, 20));
+		System.out.println(it.getTotalCoverage());
+		it.addInterval(new Interval(1, 7));
+		System.out.println(it.getTotalCoverage());
+		it.addInterval(new Interval(5, 12));
+		System.out.println(it.getTotalCoverage());
+		
+	}
+	List<Interval> intervals;
+	int coverage;
+	public Intervals() {
+		intervals = new ArrayList<Interval>();
+		coverage = 0;
+	}
+	public void addInterval(Interval interval) {
+		if(interval == null || interval.end <= interval.start) {
+			throw new RuntimeException("Invalid input");
+		}
+		List<Interval> newIntervals = new ArrayList<Interval>();
+		int i = 0;
+		int addedCoverage = interval.end - interval.start;
+		while(i < intervals.size() && intervals.get(i).end < interval.start) {
+			newIntervals.add(intervals.get(i++));
+		}
+		int overlap = 0;
+		while(i < intervals.size() && intervals.get(i).start <= interval.end) {
+			overlap += Math.min(interval.end, intervals.get(i).end) - Math.max(interval.start, intervals.get(i).start);
+			interval.start = Math.min(interval.start, intervals.get(i).start);
+			interval.end = Math.max(interval.end, intervals.get(i).end);
+			i++;
+		}
+		newIntervals.add(interval);
+		while(i < intervals.size()) {
+			newIntervals.add(intervals.get(i++));
+		}
+		this.intervals = newIntervals;
+		coverage += addedCoverage - overlap;
+	}
+	public int getTotalCoverage() {
+		int totCoverage = 0;
+		for(Interval it : intervals) {
+			totCoverage += it.end - it.start;
+		}
+//		System.out.println("total coverage is " + totCoverage);
+		return coverage;
+	}
+	
+}
+class Interval {
+	int start, end;
+	public Interval(int s, int e) {
+		start = s;
+		end = e;
+	}
+	@Override
+	public String toString() {
+		return "[" + start + ":" + end + "]";
+	}
+}
