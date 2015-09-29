@@ -1,0 +1,34 @@
+/*
+Implement list, insert remove size all in O(1)
+*/
+public class MyList <T> {
+	Map<T, Integer> map;
+	List<T> list;
+	public MyList() {
+		map = new HashMap<T, Integer>();
+		list = new ArrayList<T>();
+	}
+	public void insert(T e) {
+		if(!map.containsKey(e)) {
+			list.add(e);
+			map.put(e, list.size() - 1);
+		}
+	}
+	public int size() {
+		return map.size();
+	}
+	public void remove(T e) {
+		if(map.containsKey(e)) {
+			int idx = map.get(e);
+			swap(idx, list.size() - 1);
+			map.put(list.get(idx), idx);
+			map.remove(e);
+			list.remove(list.size() - 1)s;
+		}
+	}
+	private void swap(int i, int j) {
+		T temp = list.get(i);
+		list.set(i, list.get(j));
+		list.set(j, temp);
+	}
+}
