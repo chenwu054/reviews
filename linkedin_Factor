@@ -1,0 +1,52 @@
+/*
+Print all unique combination of factors of a given number
+*/
+public class Factor {
+	public static void main(String[] arg) {
+		int a = 24;
+		List<List<Integer>> ret = factor(a);
+		for(List<Integer> list : ret) {
+			for(Integer i : list) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	public static List<List<Integer>> factor(int n) {
+		if (n <= 0) {
+			throw new RuntimeException("Invalid input");
+		}
+		List<List<Integer>> ret = new ArrayList<List<Integer>>();
+		List<Integer> one = new ArrayList<Integer>();
+		one.add(1);
+		one.add(n);
+		ret.add(one);
+		List<Integer> list = new ArrayList<Integer>();
+		list.add(0);
+		for(int i = 2; i <= Math.sqrt(n); i++) {
+			list.set(0, i);
+			if(n % i == 0) {
+				recursiveFactor(list, i, n / i, ret);
+			}
+		}
+		
+		return ret;
+	}
+	public static void recursiveFactor(List<Integer> list, int start, int num, List<List<Integer>> ret) {
+		if(num == 1) {
+			List<Integer> newList = new ArrayList<Integer>(list);
+//			newList.add(num);
+			ret.add(newList);
+			return;
+		}
+		list.add(0);
+		for(int i = start; i <= num; i++) {
+			if(num % i == 0) {
+				list.set(list.size() - 1, i);
+				recursiveFactor(list, i, num / i, ret);
+			}		
+		}
+		list.remove(list.size() - 1);
+	}
+}
