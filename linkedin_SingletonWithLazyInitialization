@@ -1,0 +1,52 @@
+/*
+
+*/
+
+public class Singleton {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		final Random r = new Random();
+		for(int i = 0; i < 5; i++) {
+			Thread t = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						Thread.sleep(r.nextInt(1000));
+						Singleton  s = Singleton.getInstance();
+						Thread.sleep(r.nextInt(1000));
+						System.out.println(s);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			t.start();
+		}
+	}
+	private Singleton() {
+		System.out.println("a new instnace!!! in thread: " + Thread.currentThread());
+	}
+	@Override
+	public String toString() {
+		String ret = Thread.currentThread() + "";
+		return ret;
+	}
+	private static Singleton instance; 
+	public static Singleton getInstance() {
+		if(instance == null) {
+			synchronized(Singleton.class) {
+				if(instance == null) {
+					instance = new Singleton();
+				}
+			}
+ 		}
+		return instance;
+	}
+}
