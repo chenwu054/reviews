@@ -1,0 +1,56 @@
+/*
+
+*/
+public class Solution {
+    public String minWindow(String s, String t) {
+        if(t == null || s == null) {
+            return s;
+        }
+        if(t.length() == 0) {
+            return t;
+        }
+        int n = s.length(), m = t.length();
+        Map<Character, Integer> tmap = new HashMap<Character, Integer>();
+        Map<Character, Integer> smap = new HashMap<Character, Integer>();
+        for(int i = 0; i < m; i++) {
+            char c = t.charAt(i);
+            if(!tmap.containsKey(c)) {
+                tmap.put(c, 1);
+                smap.put(c, 0);
+            } else {
+                tmap.put(c, 1 + tmap.get(c));
+            }
+        }
+        int len = 0, min = Math.min(Integer.MAX_VALUE - 1, s.length()) + 1;
+        int start = 0, end = 0, minStart = -1, minEnd = -1;
+        while(end < n) {
+            while(end < n && len < m) {
+                char c = s.charAt(end++);
+                if(smap.containsKey(c)) {
+                    if(smap.get(c) < tmap.get(c)) {
+                        len++;
+                    }
+                    smap.put(c, smap.get(c) + 1);
+                }
+            }
+            while(start <= end && len == m) {
+                if(minStart < 0 || minEnd - minStart > end - start) { // important!! must be valid to update the min coordinates
+                    minStart = start;
+                    minEnd = end;
+                }
+                char c = s.charAt(start++);
+                if(smap.containsKey(c)) {
+                    if(smap.get(c) <= tmap.get(c)) {
+                        len--;
+                    }
+                    smap.put(c, smap.get(c) - 1);
+                }
+            }
+            
+        }
+        if(minStart < 0) {
+            return "";
+        }
+        return s.substring(minStart, minEnd);
+    }
+}
