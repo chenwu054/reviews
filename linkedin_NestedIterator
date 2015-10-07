@@ -1,0 +1,76 @@
+/*
+
+*/
+public class NestedIterator <T> {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		List<Object> list = new ArrayList<Object>();
+		List<Object> list1 = new ArrayList<Object>();
+		list1.add(1);list1.add(2);
+		List<Object> list2 = new ArrayList<Object>();
+		list2.add(4);
+		List<Object> list3 = new ArrayList<Object>();
+		list3.add(5);list3.add(6);
+		List<Object> list4 = new ArrayList<Object>();
+		List<Object> list5 = new ArrayList<Object>();
+		List<Object> list6 = new ArrayList<Object>();
+		list1.add(list6);
+		list.add(list1);
+		list.add(3);
+		list4.add(list5);
+		list.add(list4);
+		list2.add(list3);
+		list.add(list2);
+		NestedIterator it = new NestedIterator(list);
+		while(it.hasNext()) {
+			System.out.print(it.next() + " ");
+		}
+	}
+	Stack<Iterator<Object>> k;
+	T cur;
+	public NestedIterator(List<Object> l) {
+		if(l == null) {
+			throw new RuntimeException("Invalie input");
+		}
+		k = new Stack<Iterator<Object>>();
+		k.push(l.iterator());
+		cur = null;
+	}
+	
+	public boolean hasNext() {
+		while(cur == null && !k.empty()) {
+			Iterator<Object> obj = k.peek();
+//			while(k.peek().hasNext()) {
+				while(obj.hasNext()) {
+					Object o = obj.next();
+					if(o instanceof List) {
+						obj = ((List<Object>)o).iterator();
+						k.push(obj);
+					} else {
+						cur = (T)o;
+						break;
+					}
+				}
+				if(!k.peek().hasNext()) {
+					k.pop();
+				}
+//			}
+		}
+		return cur != null;
+	}
+	public T next() {
+		if(hasNext()) {
+			T ret = cur;
+			cur = null;
+			return ret;
+		}
+		return null;
+	}
+	public void remove() {
+		k.peek().remove();
+	}
+}
