@@ -32,3 +32,33 @@ public class Solution {
         return ret;
     }
 }
+
+public class Solution {
+    public String intToRoman(int num) {
+        char[] ones = {'I','X','C','M'};
+        char[] fives = {'V','L','D',' '};
+        StringBuilder sb = new StringBuilder();
+        String str = num + "";
+        while(str.length() < 4) {
+            str = "0" + str;
+        }
+        for(int i = 0; i < 4; i++) {
+            int ch = str.charAt(i) - '0';
+            if(ch == 9) {
+                sb.append(ones[ones.length - i - 1]).append(ones[ones.length - i]);
+            } else if(ch == 4) {
+                sb.append(ones[ones.length - i - 1]).append(fives[fives.length - i - 1]);
+            } else {
+                if(ch >= 5) {
+                    sb.append(fives[fives.length - i - 1]);
+                    ch = ch - 5;
+                }
+                while(ch > 0) {
+                    sb.append(ones[ones.length - i - 1]);
+                    ch = ch - 1;
+                }
+            }
+        }
+        return sb.toString();
+    }
+}
