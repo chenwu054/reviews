@@ -1,0 +1,61 @@
+/*
+given the height int[] h (range from 1 - n) and how many people before are taller int[] taller
+return the original order
+solution: use bit to range sum how many people are taller before current person.
+1. in the sorted order (e.g. 1,2,3,4,5) h is the ith position and (h-1) how many people before him. 
+So, height can be index + 1, which is position
+2. sort the people by height 
+3. start from shortest people and find the first available position: 
+the availble posotions: it is the greatest position that is less than or equal to h
+4. find how many people are shorter before this position. Note, it is from [0, p), which is [1,p) in BIT
+5. the number shorter(since we start with shortest) + taller ahead(given) = how many people ahead -> index (0 based)
+6. remove the available position (index+1, NOT the previous availble position because he is relocated given # of taller people).
+Runtime complexity: BIT insert & search -> N * O(lgN) + TreeSet insert (NlgN) + delete(N * lgN) = O(NlgN) 
+*/
+class Item {
+	int h, idx;
+	Item(int h, int idx) {
+		this.h = h;
+		this.idx = idx;
+	}	
+}
+int[] sort(int[] h, int[] taller) {
+	// assume h is from 1 ~ n
+	int n = h.length;
+	int[] bit = new int[n+1];
+	List<Item> list= new ArrayList<>();
+	TreeSet<Integer> avail = new TreeSet<>();
+	for(int i = 0; i<n;i++) {
+		list.add(new Item(h[i],i));
+		avail.add(i+1);
+	}
+	Collections.sort(list, new Comparator<Item>() {
+		public int compare(Item a, Item b) {
+			return a.h - b.h;
+		}
+	});
+	int[] ret = new int[n];
+	for(Item i : list) {
+		//get avail:
+		int availH = avail.floor(i.h);
+		int index = search(bit, availH) + taller[i.idx];
+		ret[index] = i.h;
+		add(bit, index+1);
+		avail.remove(index+1);
+	}
+	return ret;
+}
+private int search(int[] bit, int i) {
+	int sum = 0;
+	while(i>0) {
+		sum += bit[i];
+		i -= i&-i;
+	}
+	return sum;
+}
+private void add(int[] bit, int i) {
+	while(i<bit.length) {
+		bit[i] += 1;
+		i+=i&-i;
+	}
+}
