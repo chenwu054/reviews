@@ -1,0 +1,162 @@
+public class BigInt {
+	List<Integer> num;
+	boolean neg;
+	public BigInt() {
+		num = new ArrayList<Integer>();
+		neg= false;
+	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Test
+	public void test() {
+		System.out.println(-90 % 100);
+//		System.out.println(-90 % 100);
+	}
+	@Test
+	public void addPositiveNumbersTest() {
+		BigInt a = new BigInt();
+		a.num.add(78);
+		a.num.add(1);
+		BigInt b = new BigInt();
+		b.num.add(64); // 0 789
+		BigInt c = BigInt.add(a, b);
+		System.out.println(c);
+	}
+	@Test
+	public void addNegNumbersTest() {
+		BigInt a = new BigInt();
+		a.num.add(78);
+		a.num.add(1);
+		a.neg = true;
+		BigInt b = new BigInt();
+		b.num.add(64); // 0 789
+		b.neg=true;
+		BigInt c = BigInt.add(a, b);
+		System.out.println(c);
+	}
+	@Test
+	public void addPositiveAndNegativeNumber() {
+		BigInt a = new BigInt();
+		a.num.add(35);
+		a.num.add(1);
+		a.neg = true;
+		BigInt b = new BigInt();
+		b.num.add(64); // 0 789
+		b.neg=false;
+		BigInt c = BigInt.add(a, b);
+		System.out.println(c);
+	} 
+	/* test case:
+	 * 1. test both positive numbers and carry
+	 * 2. test both negative numbers and carry
+	 * 3. test positive and negative number test borrow, positive greater
+	 * 4. test positive and negative number test borrow, negative greater
+	 * 5. test zero 
+	 * 
+	 * */
+	@Test
+	public void carryNumberTest() {
+		BigInt a = new BigInt();
+		a.num.add(35);
+		a.num.add(1);
+		a.neg = true;
+		BigInt b = new BigInt();
+		b.num.add(Integer.MAX_VALUE-1); // 0 789
+		b.neg=true;
+		BigInt c = BigInt.add(a, b);
+		System.out.println(c);
+	}
+	@Test
+	public void posNegZeroTest() {
+		BigInt a = new BigInt();
+		a.num.add(35);
+		a.num.add(17);
+		a.num.add(23);
+		a.neg = false;
+		BigInt b = new BigInt();
+		b.num.add(35);
+		b.num.add(17);
+		b.num.add(23);
+		b.neg=true;
+		BigInt c = BigInt.add(a, b);
+		System.out.println(c);
+	}
+	@Test
+	public void posNegZero2Test() {
+		BigInt a = new BigInt();
+		a.num.add(34);
+		a.num.add(17);
+		a.num.add(23);
+		a.neg = false;
+		BigInt b = new BigInt();
+		b.num.add(35);
+		b.num.add(17);
+		b.num.add(23);
+		b.neg=true;
+		BigInt c = BigInt.add(a, b);
+		System.out.println(c);
+	}
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(neg?'-':"");
+		String maxIntString = Integer.MAX_VALUE + "";
+		for(int i = num.size() -1 ;i>=0;i--) {
+			if(i<num.size()-1) {
+				String t = num.get(i) + "";
+				for(int j=0;j<maxIntString.length() - t.length();j++) {
+					sb.append('0');
+				}
+			}
+			sb.append(num.get(i));
+		}
+		return sb.toString();
+	}
+	static boolean isGreater(BigInt a, BigInt b) {
+		if(a.num.size() != b.num.size()) {
+			return a.num.size() > b.num.size();
+		}
+		for(int i = a.num.size()-1;i>=0;i--) {
+			if(b.num.get(i) > a.num.get(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	static BigInt add(BigInt a, BigInt b) {
+		BigInt ret = new BigInt();
+		long carry = 0, sum = 0;
+		int n = a.num.size(), m = b.num.size();
+		boolean neg = false;
+		if(isGreater(a, b)) {
+			neg = a.neg;
+		} else {
+			neg = b.neg;
+		}
+		for(int i = 0;i<Math.max(n, m);i++) {
+			sum = (a.neg?-1:1) * (i<n?a.num.get(i):0) + carry + (i<m?b.num.get(i):0) * (b.neg?-1:1);
+			carry = sum / Integer.MAX_VALUE;
+			sum = sum % Integer.MAX_VALUE;
+			if(neg ^ (sum<0) && sum!=0) {
+				sum = (long)Integer.MAX_VALUE - Math.abs(sum);
+				carry = neg?1:-1;
+			}
+			ret.num.add((int)Math.abs(sum));
+		}
+		if(carry > 0) {
+			ret.num.add((int)Math.abs(carry));
+		}
+		while(ret.num.size() > 0 && ret.num.get(ret.num.size()-1) == 0) {
+			ret.num.remove(ret.num.size()-1);
+		}
+		if(ret.num.size() == 0) {
+			ret.num.add(0);
+			ret.neg = false;
+		} else {
+			ret.neg = neg;
+		}
+		return ret;
+	}
+}
