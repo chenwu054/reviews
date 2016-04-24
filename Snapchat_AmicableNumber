@@ -1,0 +1,20 @@
+/*
+
+*/
+static List<int[]> amicableNumberPairs(int n) {
+		List<int[]> ret = new ArrayList<>();
+		int[] factor = new int[n+1];
+		for(int i = 1;i<=n/2;i++) {
+			for(int j = 2;j*i<=n;j++) {
+				factor[j*i] += i;
+			}
+		}
+
+		for(int i =1;i<=n;i++) {
+			if(factor[i]<=n && factor[factor[i]] == i && i<factor[i]) {
+				int[] a = new int[]{i, factor[i]};
+				ret.add(a);
+			}
+		}
+		return ret;
+	}
