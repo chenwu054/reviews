@@ -1,0 +1,80 @@
+/*
+
+*/
+/*
+        4
+      3    6
+    2    5   7
+    */
+    public static validTreeTest() {
+        String[] a = new int[5];
+        a[0] = "(6,5)";
+        a[1] = "(6,7)";
+        a[2] = "(4,3)";
+        a[3] = "(3,2)";
+        a[4] = "(4,6)";
+        List<Integer> ret = inorderPrintTree(a);
+        System.out.println(ret);
+    }
+    static class TreeNode {
+        int val;
+        TreeNode left, right;
+        public TreeNode(int v) {
+            val = v;
+            left = null;
+            right = null;
+        }
+    }
+    static List<Integer> inorderPrintTree(String[] input) {
+        List<Integer> ret= new ArrayList<>();
+        Map<Integer, TreeNode> map = new HashMap<>();
+        Map<Integer, TreeNode> rootMap = new HashMap<>();
+        
+        for(String[] s : input) {
+            int[] value = parse(s);
+            for(int i = 0;i<value.length;i++) {
+                if(!map.containsKey(value[i])) {
+                    TreeNode node = new TreeNode(value[i]);
+                    map.put(value[i], node);
+                    if(i==0) {
+                        rootMap.put(value[i], node);
+                    } else if(rootMap.containsKey(value[i])) {
+                        rootMap.remove(value[i]);
+                    }
+                }
+                TreeNode p = map.get(value[0]);
+                TreeNode c = map.get(value[1]);
+                if(p.left== null) {
+                    p.left= c;
+                } else if(p.right==null) {
+                    p.right = c;
+                } else {
+                    throw new RuntimeException("Invalid input: more than 2 children");
+                }
+            }
+        }
+        if(rootMap.size() != 1) {
+            throw new RuntimeException("Invalid input: no or more than 1 root");
+        }
+        TreeNode root = null;
+        for(TreeNode v : rootMap.values()) {
+            root = v;
+        }
+        inorderPrint(root, ret);
+        return ret;
+    }
+    static void inorderPrint(TreeNode root, List<Integer> ret) {
+        if(root == null) {
+            return ;
+        }
+        inorderPrint(root.left, ret);
+        ret.add(root.val);
+        inorderPrint(root.right, ret);
+    }
+    static int[] parse(String s) {
+        String[] a = s.split("(),");
+        int[] ret = new int[2];
+        ret[0] = Integer.parseInt(a[0]);
+        ret[1] = Integer.parseInt(a[1]);
+        return ret;
+    }
