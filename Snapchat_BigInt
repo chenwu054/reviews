@@ -1,3 +1,196 @@
+/* package whatever; // don't place package name! */
+
+import java.io.*;
+import java.util.*;
+
+class myCode
+{
+    public static void main (String[] args) throws java.lang.Exception
+    {
+        System.out.println("Hello Java");
+        additionTest();
+
+        posPosTest();
+        negNegTest();
+        posNegTest();
+        negPosTest();
+        zeroTest();
+    }
+    public static void additionTest() {
+        BigInt a = new BigInt();
+        a.num.add(99);
+        a.num.add(2); // 200000099
+        BigInt b = new BigInt();
+        b.num.add(2);
+        b.num.add(1);
+        BigInt ret = a.addPos(b);
+        System.out.println(ret);
+    }
+    public static void addition2Test() {
+        BigInt a = new BigInt();
+        a.num.add(99);
+        a.num.add(2); // 200000099
+        BigInt b = new BigInt();
+        b.num.add(2);
+        b.num.add(1); // 1000002
+        b.neg = true;
+        BigInt ret = a.add(b);
+        System.out.println(ret);
+    }
+    public static void posPosTest() {
+        System.out.println("-----pos pos test----");
+        BigInt a = new BigInt();
+        a.num.add(99);
+        a.num.add(2); // 200000099
+        BigInt b = new BigInt();
+        b.num.add(2);
+        b.num.add(1); // 1000002
+        BigInt ret = a.add(b);
+        System.out.println(ret);
+    }
+    public static void negNegTest() {
+        System.out.println("-----neg neg test----");
+        BigInt a = new BigInt();
+        a.num.add(Integer.MAX_VALUE-1);
+        a.num.add(2); // 200000099
+        a.neg=true;
+        BigInt b = new BigInt();
+        b.num.add(2);
+        b.num.add(1); // 1000002
+        b.neg = true;
+        BigInt ret = a.add(b);
+        System.out.println(ret);
+    }
+    public static void posNegTest() {
+        System.out.println("-----posNeg test----");
+        BigInt a = new BigInt();
+        a.num.add(1);
+        a.num.add(2); // 20000001
+        BigInt b = new BigInt();
+        b.num.add(2);
+        b.num.add(1); // -100000002
+        b.neg = true;
+        BigInt ret = a.add(b);
+        System.out.println(ret);
+    }
+    public static void negPosTest() {
+        System.out.println("-----negPos test----");
+        BigInt a = new BigInt();
+        a.num.add(2);
+        a.num.add(1); // 1000000002
+        BigInt b = new BigInt();
+        b.num.add(1);
+        b.num.add(2); // -2000000001
+        b.neg = true;
+        BigInt ret = a.add(b);
+        System.out.println(ret);
+    }
+    public static void zeroTest() {
+        System.out.println("-----zero test----");
+        BigInt a = new BigInt();
+        a.num.add(2);
+        a.num.add(3); // 200000099
+        a.num.add(76); // 200000099
+        BigInt b = new BigInt();
+        b.num.add(2);
+        b.num.add(3); // 1000002
+        b.num.add(76); // 1000002
+        b.neg = true;
+        BigInt ret = a.add(b);
+        System.out.println(ret);
+    }
+    /*
+    pos + pos -> test carry
+    neg + neg -> test neg carry
+    pos + neg -> result is neg 
+    pos + neg -> result is pos
+    test Zero -> 
+    */
+
+    
+    static class BigInt {
+        boolean neg;
+        List<Integer> num;
+        public BigInt() {
+            neg = false;
+            num=new ArrayList<>();
+        }
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            String maxIntString = Integer.MAX_VALUE + "";
+            if(neg) {
+                sb.append('-');
+            }
+            for(int i = num.size()-1;i>=0;i--) {
+                String numString = num.get(i)+"";
+                if(i!=num.size()-1) {
+                    for(int j = 0;j<maxIntString.length() - numString.length();j++) {
+                        sb.append('0');
+                    }
+                }
+                sb.append(numString);
+            }
+            return sb.toString();
+        }
+        private boolean isGreater(BigInt b) {
+            if(num.size() != b.num.size()) {
+                return num.size() > b.num.size();
+            }
+            for(int i =num.size()-1;i>=0;i--) {
+                if(b.num.get(i) != num.get(i)) {
+                    return num.get(i)>=b.num.get(i);
+                }
+            }
+            return true;
+        }
+        public BigInt add(BigInt b) {
+            BigInt ret =new BigInt();
+            boolean isNeg = isGreater(b)?this.neg:b.neg;
+            long sum = 0, carry = 0;
+            int n =num.size(), m = b.num.size();
+            for(int i = 0;i<Math.max(n,m);i++) {
+                sum = (neg?-1:1)*(i<n?num.get(i):0) + carry + (b.neg?-1:1) * (i<m?b.num.get(i):0);
+                carry = sum/ Integer.MAX_VALUE;
+                sum = sum % Integer.MAX_VALUE;
+                if(isNeg ^ (sum<0) && sum != 0) {
+                    sum = (long)Integer.MAX_VALUE - Math.abs(sum);
+                    carry = isNeg ? 1: -1;
+                }
+                ret.num.add((int)Math.abs(sum));
+            }
+            if(carry != 0) {
+                ret.num.add((int)Math.abs(carry));
+            }
+            ret.neg = isNeg;
+            while(ret.num.size()>0 && ret.num.get(ret.num.size()-1) == 0) {
+                ret.num.remove(ret.num.size()-1);
+            }
+            if(ret.num.size() == 0) {
+                ret.num.add(0);
+                ret.neg = false;
+            }
+            return ret;
+        }
+        public BigInt addPos(BigInt b) {
+            BigInt ret = new BigInt();
+            long sum = 0, carry = 0;
+            int n = num.size(), m = b.num.size();
+            for(int i = 0;i<Math.max(n,m);i++) {
+                sum = (i<n?num.get(i):0) + carry + (i<m?b.num.get(i):0);
+                carry = sum / Integer.MAX_VALUE;
+                sum = sum % Integer.MAX_VALUE;
+                ret.num.add((int)sum);
+            }
+            if(carry > 0) {
+                ret.num.add((int)carry);
+            }
+            return ret;
+        }
+    }
+}
+
+
+//===================================
 public class BigInt {
 	List<Integer> num;
 	boolean neg;
@@ -118,8 +311,8 @@ public class BigInt {
 			return a.num.size() > b.num.size();
 		}
 		for(int i = a.num.size()-1;i>=0;i--) {
-			if(b.num.get(i) > a.num.get(i)) {
-				return false;
+			if(b.num.get(i) !+ a.num.get(i)) {
+				return a.num.get(i)>=b.num.get(i);
 			}
 		}
 		return true;
