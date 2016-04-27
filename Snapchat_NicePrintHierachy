@@ -1,0 +1,163 @@
+/*
+第二面，一个中年白人manager。一上来先问了问why snapchat, what's your favoriate parts of internshop in Facebook。之后做题，给定一些输入如
+Employee,Manager,ItemsSold
+Alice,,5. from: 1point3acres.com/bbs 
+Bob,Alice,3
+Carol,Bob,2
+David,Bob,3
+Eve,Alice,2
+Ferris,Eve,1
+要求打印出这个样子
+Alice 16
+    Bob 8 . 
+        Carol 2
+        David 3
+    Eve 3
+        Ferris 
+        
+follow up要求打印成这个样子
+Alice 16
+|-Bob 8
+| |-Carol 2
+| \_David 3
+\_Eve 3
+  \_Ferris 1
+*/
+public class NicePrintHierachy {
+	/*
+Alice 31
+|-Bob 23
+| |-Carol 17
+| | |-Richard 10
+| | | \_Kim 5
+| | \_Tom 5
+| \_David 3
+\_Eve 3
+  \_Ferris 1
+	 * */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+	}
+	@Test
+	public void testcase1() {
+		String[] a = new String[6];
+		a[0] = "Alice,,5"; 
+		a[1] = "Bob,Alice,3";
+		a[2] = "Carol,Bob,2";
+		a[3] = "David,Bob,3";
+		a[4] = "Eve,Alice,2";
+		a[5] = "Ferris,Eve,1";
+		NicePrintHierachy nice = new NicePrintHierachy();
+		List<String> ret = nice.printStructure(a);
+		for(String b : ret) {
+			System.out.println(b);
+		}
+	}
+	class Node {
+		int val;
+		String name;
+		List<Node> next;
+		public Node(int v, String name) {
+			this.name = name;
+			this.val = v;
+			next = new ArrayList<>();
+		}
+	}
+
+	public List<String> printStructure(String[] input) {
+		if(input == null) {
+			throw new RuntimeException("Invalid input");
+		}
+		List<String> ret = new ArrayList<>();
+		Node root = parseInput(input);
+		populateParent(root);
+		StringBuilder sb = new StringBuilder();
+		preorderPrint(root, sb, true, false, ret);
+		//preorderPrint(root, sb, ret);
+		return ret;
+	}
+	
+
+	private void preorderPrint(Node root,StringBuilder sb, boolean isRoot, boolean isLast, List<String> ret) {
+		if(root == null) {
+			return;
+		}
+		int len = sb.length();
+		if(!isRoot) {
+			if(isLast) {
+				sb.setCharAt(sb.length()-1, '\\');
+				sb.append('_');
+			} else {
+				sb.append('-');
+			}
+		}
+		sb.append(root.name).append(' ').append(root.val);
+		ret.add(sb.toString());
+		sb.setLength(len);
+		if(isLast) {
+			sb.deleteCharAt(sb.length() - 1).append("  ");
+		}
+		sb.append('|');
+		for(int i = 0;i< root.next.size();i++) {
+			if(i == root.next.size()-1) {
+				preorderPrint(root.next.get(i), sb, false, true, ret);
+			} else {
+				preorderPrint(root.next.get(i), sb, false, false, ret);
+			}
+		}
+		sb.setLength(len);
+	}
+	private void preorderPrint(Node root,StringBuilder sb,List<String> ret) {
+		if(root == null) {
+			return;
+		}
+		int len = sb.length();
+		sb.append(root.name).append(' ').append(root.val);
+		ret.add(sb.toString());
+		sb.setLength(len);
+		sb.append('\t');
+		for(Node a : root.next) {
+			preorderPrint(a, sb, ret);
+		}
+		sb.setLength(len);
+	}
+	private int populateParent(Node root) {
+		if(root == null) {
+			return 0;
+		}
+		int tot = root.val;
+		for(Node a : root.next) {
+			tot += populateParent(a);
+		}
+		root.val = tot;
+		return tot;
+	}
+
+	private Node parseInput(String[] input) {
+		Node root = null;
+		Map<String, Node> map = new HashMap<>();
+		for(String strs: input) {
+			String[] s = strs.split(",");
+			if(s.length < 3) {
+				throw new RuntimeException("Invalid input");		
+			}
+			String a = s[0].trim();
+			String b = s[1].trim();
+			int val = Integer.parseInt(s[2].trim());
+			if(!map.containsKey(a)) {
+				Node newNode = new Node(val, a);
+				map.put(a, newNode);
+			}
+			map.get(a).val = val;
+			if(!map.containsKey(b)) {
+				Node newNode = new Node(0, b);
+				map.put(b, newNode);
+			}
+			map.get(b).next.add(map.get(a));
+			if("".equals(b)) {
+				root = map.get(a);
+			}
+		}
+		return root;
+	}
+}
