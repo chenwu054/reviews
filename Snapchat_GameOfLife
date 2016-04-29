@@ -1,0 +1,55 @@
+/*
+game of life。一开始我说in place，小哥却把空间讨论到了内存的层次，
+说如果那bit存每一位的话，in place需要用两位，
+copy数组的话虽然多开一个数组但是只用一位，其实差不多。。。
+我无语，没想到要说到这层次，所以就顺面试官的意写了个copy版本的。
+然后面试官问有没有什么办法可以优化的，我说像这个问题一般应用场景matrix应该比较空，
+live的点比较少，因此我可以拿哈希存live的点，然后对每个live的点和其邻居更新，
+再得到下一轮live点的hash表。小哥说你这个想法我很喜欢，然后聊了点其他的就没了
+*/
+public class Solution {
+    
+    public void gameOfLife(int[][] board) {
+        if(board==null||board.length==0) {
+            return;
+        }        
+        int n =board.length, m = board[0].length;
+        byte[] mask = new byte[((m*n)>>3)+1];
+        for(int i = 0;i<n;i++) {
+            for(int j = 0;j<m;j++) {
+                boolean alive = testAlive(board,i,j);
+                if(alive) {
+                    mask[(i*m+j)>>3] |= 1<<((i*m+j)%8);
+                }
+            }
+        }
+        for(int i = 0;i<n;i++) {
+            for(int j = 0;j<m;j++) {
+                int a = (mask[(i*m+j)>>3]) & (1<<((i*m+j)%8));
+                board[i][j] = a>0?1:0;
+            }
+        }
+    }
+    int[][] k = {{-1,0},{-1,-1},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
+    boolean testAlive(int[][] board, int i, int j) {
+        int count = 0;
+        for(int s=0;s<k.length;s++) {
+            int x = k[s][0]  + i;
+            int y = k[s][1]  + j;
+            if(x>=0&&y>=0&&x<board.length&&y<board[0].length&&board[x][y]==1) {
+                count++;
+                if(count>3) {
+                    return false;
+                }
+            }
+        }
+        if(count<2) {
+            return false;
+        }
+        if(board[i][j] == 1 || count == 3) {
+            return true;
+        }
+        return false;
+    }
+    
+}
