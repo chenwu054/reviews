@@ -1,0 +1,86 @@
+/*
+2.给两个string判断是不是anagram
+follow up, 给一个长string一个短string, 判断长string里是否存在substring和短string是anagram,要求O(n)时间，n是长string的长度
+LZ用了移动窗口+hashmap存出现次数的方法，好像不是小哥想到的方法，纠结了一段时间此法是否work, 
+小哥想到了overfit的问题，好心提醒了一下可以在hashmap存负数，然后coding解决，闲聊了一会
+*overfit指的是当前substring某个字母出现个数多于短string里面该字母的出现次数
+
+*/
+public class Anagram {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	public boolean isAnagram(String a, String b) {
+		if(a==null||b==null) {
+			return false;
+		}
+		if(a.length() != b.length()) {
+			return false;
+		}
+		Map<Character, Integer> map = new HashMap<>();
+		for(int i = 0;i<a.length();i++) {
+			char c = a.charAt(i);
+			if(map.containsKey(c)) {
+				map.put(c, 1);
+			} else {
+				map.put(c, 1+ map.get(c));
+			}
+		}
+		for(int i = 0;i<b.length();i++) {
+			char c = b.charAt(i);
+			if(!map.containsKey(c)||map.get(c) == 0) {
+				return false;
+			}
+			map.put(c, map.get(c)-1);
+		}
+		return true;
+ 	}
+	public boolean hasAnagramSubstring(String a, String b) {
+		if(a==null || b==null) {
+			throw new RuntimeException("Invalid input");
+		}
+		if(a.length() < b.length()) {
+			return false;
+		}
+		Map<Character, Integer> map = new HashMap<>();
+		for(int i = 0;i<b.length();i++) {
+			char c = b.charAt(i);
+			map.put(c, 1 + (map.containsKey(c)?map.get(c):0));
+		}
+		int count = 0, size = b.length();
+		Map<Character, Integer> aMap = new HashMap<>();
+		for(int i=0;i<b.length()-1;i++) {
+			char c = a.charAt(i);
+			if(!aMap.containsKey(c)) {
+				aMap.put(c, 1);
+			} else {
+				aMap.put(c, aMap.get(c)+1);
+			}
+			if(map.containsKey(c) && aMap.get(c) <= map.get(c)) {
+				count++;
+			}
+		}
+		for(int i = b.length()-1; i<a.length();i++) {
+			char c = a.charAt(i);
+			if(!aMap.containsKey(c)) {
+				aMap.put(c, 1);
+			} else {
+				aMap.put(c, aMap.get(c)+1);
+			}
+			if(map.containsKey(c) && aMap.get(c) <= map.get(c)) {
+				count++;
+			}
+			if(count == size) {
+				return true;
+			}
+			c = a.charAt(i-b.length()+1);
+			aMap.put(c, aMap.get(c)-1);
+			if(map.containsKey(c) && aMap.get(c) <map.get(c)) {
+				count--;
+			}
+		}
+		return false;
+	}
+}
