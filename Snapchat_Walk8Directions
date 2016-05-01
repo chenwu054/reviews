@@ -33,7 +33,7 @@ int[][] s = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
 				}
 			}
 		}
-		return sum(a, k%2);
+		return sum(a, k%2); // or return a[k%2][iEnd][jEnd];
 	}
 	int sum(int[][][] a,int x) {
 		int[][] b = a[x];
