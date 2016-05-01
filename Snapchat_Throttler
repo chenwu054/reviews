@@ -1,0 +1,38 @@
+/*
+rate limiter
+*/
+public class Throttler {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		testcase1();
+	}
+	public static void testcase1() throws InterruptedException {
+		Throttler t = new Throttler(10);
+		Random r = new Random();
+		for(int i = 0;i<50;i++) {
+			int time = r.nextInt(100);
+			Thread.sleep(time);
+			boolean a = t.allowAccess();
+			System.out.println("time:" + time + ", access: " + a);
+		}
+	}
+	int qps;
+	long[] time;
+	int idx = 0;
+	public Throttler(int qps) {
+		this.qps = qps;
+		time = new long[qps];
+		idx = 0;
+	}
+	public boolean allowAccess() {
+		long t = new Date().getTime();
+		if(time[idx]==0 || t - time[idx] >= 1000) {
+			time[idx++] = t;
+			idx = idx%time.length;
+		} else {
+			return false;
+		}
+		return true;
+	}
+}
