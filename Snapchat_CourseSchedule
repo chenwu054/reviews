@@ -1,0 +1,53 @@
+/*
+I
+*/
+public class Solution {
+    public boolean canFinish(int n, int[][] p) {
+        if(p == null || n == 0) {
+            return false;
+        }
+        if(n==1) {
+            return true;
+        }
+        Map<Integer, Set<Integer>> g = new HashMap<>();
+        buildGraph(p, g);
+        Set<Integer> local = new HashSet<>();
+        Set<Integer> global = new HashSet<>();
+        for(int i = 0;i<n;i++) {
+            if(!global.containsKey(i)) {
+                boolean valid = dfs(g, i, local, global);
+                if(!valid) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    boolean dfs(Map<Integer, Set<Integer>> g, int start, Set<Integer> local, Set<Integer> global) {
+        if(local.contains(start)) {
+            return false;
+        }
+        if(global.contains(start)) {
+            return true;
+        }
+        local.add(start);
+        if(g.containsKey(start)) {
+            for(Integer next : g.get(start)) {
+                boolean v = dfs(g, next, local, global);
+                if(!v) {
+                    return false;
+                }
+            }
+        }
+        global.add(start);
+        local.remove(start);
+    }
+    void buildGraph(int[][] p, Map<Integer, Set<Integer>> g) {
+        for(int[] a : p) {
+            if(!g.containsKey(a[0])) {
+                g.put(a[0], new HashSet<>());
+            }
+            g.get(a[0]).add(a[1]);
+        }
+    }
+}
