@@ -1,0 +1,47 @@
+/*
+题是从点A走到点B， 给K步，8个方向都可以走， 问多少种走法。我写了个backtracking 还把自己饶了进去， 
+大哥帮我walk through了 然后好不容易写完了。问怎么improve。
+然后说了DP的思路。没让写。 (BFS)
+*/
+int[][] s = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
+	boolean valid(int n, int m, int i ,int j) {
+		if(i<0||j<0||i>=n||j>=m) {
+			return false;
+		}
+		return true;
+	}
+	int walk8Ways(int n, int m, int xs, int ys, int k) {
+		//validate 
+		if(n<=0 || m<=0 || !valid(n,m,xs,ys)) {
+			throw new RuntimeException("invalid input");
+		}
+		int[][][] a = new int[2][n][m];
+		a[0][xs][ys] = 1;
+		for(int t = 0;t<k;t++) {
+			// step
+			for(int i = 0;i<n;i++) {
+				for(int j = 0;j<m;j++) {
+					int tot = 0;
+					for(int is = 0;is<s.length;is++) {
+						int x = i+s[is][0];
+						int y = j+s[is][1];
+						if(valid(n,m,x,y)) {
+							tot += a[t%2][x][y];
+						}
+					}
+					a[1-t%2][i][j] = tot;
+				}
+			}
+		}
+		return sum(a, k%2);
+	}
+	int sum(int[][][] a,int x) {
+		int[][] b = a[x];
+		int count = 0;
+		for(int i = 0;i<b.length;i++) {
+			for(int j = 0;j<b[0].length;j++) {
+				count+=b[i][j];
+			}
+		}
+		return count;
+	}
