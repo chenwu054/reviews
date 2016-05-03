@@ -1,0 +1,96 @@
+/*
+1 given [1, [2,3], [[4]]], return sum. 计算sum的方法是每向下一个level权重+1， 
+例子的sum = 1 * 1 + (2 + 3) * 2 + 4 * 3。
+follow up：每向下一个level 权重 - 1， sum = 3 * 1 +（2 + 3）* 2 + 4 * 1 
+*/
+public class WeightedSumOfNestedInteger {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Test
+	public void testcase1() {
+		// "[1, [2,3], [[4]]]";
+		NestedInteger four = new NestedInteger(4); //4
+		List<NestedInteger> listFour = new ArrayList<>();
+		listFour.add(four);
+		NestedInteger wrapfour = new NestedInteger(listFour); // [4]
+		List<NestedInteger> listlistFour = new ArrayList<>();
+		listlistFour.add(wrapfour);
+		NestedInteger fourWrap = new NestedInteger(listlistFour); // [[4]]
+		
+		NestedInteger two = new NestedInteger(2);
+		NestedInteger three = new NestedInteger(3);
+		List<NestedInteger> twoThreeList = new ArrayList<>();
+		twoThreeList.add(two);
+		twoThreeList.add(three);
+		NestedInteger twoThreeWrap = new NestedInteger(twoThreeList);
+		
+		NestedInteger one = new NestedInteger(1);
+		
+		List<NestedInteger> allList = new ArrayList<>();
+		allList.add(one);
+		allList.add(twoThreeWrap);
+		allList.add(fourWrap);
+		
+		NestedInteger all = new NestedInteger(allList);
+		int ret = getWeightedSum(all);
+		System.out.println(ret);
+	}
+	class NestedInteger {
+		Integer value;
+		List<NestedInteger> list;
+		public NestedInteger(int v) {
+			value = v;
+			list = new ArrayList<>();
+		}
+		public NestedInteger(List<NestedInteger> ni) {
+			list = ni;
+			value = null;
+		}
+		boolean isInteger() {
+			return value!=null;
+		}
+		Integer getInt() {
+			return value;
+		}
+		List<NestedInteger> getList() {
+			return list;
+		}
+	}
+
+	int getWeightedSum(NestedInteger ni) {
+		if(ni == null) {
+			return 0;
+		}
+		if(ni.isInteger()) {
+			return ni.getInt();
+		}
+		Queue<NestedInteger> q = new LinkedList<>();
+		Queue<NestedInteger> next = new LinkedList<>();
+		Queue<NestedInteger> temp = null;
+		for(NestedInteger n : ni.getList()) {
+			q.add(n);
+		}
+		int l = 1, ret = 0, sum = 0;
+		while(!q.isEmpty()) {
+			int tot = 0;
+			while(!q.isEmpty()) {
+				NestedInteger cur = q.poll();
+				if(cur.isInteger()) {
+					tot += cur.getInt() * l;
+					sum += cur.getInt();
+				} else {
+					next.addAll(cur.getList());
+				}
+			}
+			ret += tot;
+			l++;
+			temp=q;
+			q=next;
+			next=temp;
+		}
+		return ret; // return sum * l - ret;
+	}
+}
