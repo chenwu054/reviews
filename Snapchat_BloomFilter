@@ -1,0 +1,68 @@
+/*
+Bloom filter
+*/
+public class BloomFilter {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	List<Method> hfs;
+	List<String> items;
+	int size, count;
+	int[] filter;
+	private final static double LOAD_FACTOR_THRESHOLD = 0.7;
+	public BloomFilter(List<Method> hfs) {
+		this.hfs = hfs;
+		size = 10;
+		count = 0;
+		items = new ArrayList<>();
+		filter = new int[size>>5+1];
+	}
+	private void rehash() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		size = size * 2;
+		filter = new int[size];
+		for(String key : items) {
+			add(key);
+		}
+	}
+	private boolean check(int pos) {
+		if(pos<0||pos>=size) {
+			return false;
+		}
+		int res = filter[pos>>5] & (1<<(pos%(1<<5)));
+		return res>0;
+	}
+	private void set(int pos) {
+		if(pos<0 || pos>=size) {
+			throw new RuntimeException("Invalid input");
+		}
+		filter[pos>>5] |= (1<<(pos%(1<<5)));
+	}
+	public void add(String str) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		count++;
+		for(Method hf:hfs) {
+			int pos = (int)hf.invoke(this, str);
+			set(pos);
+		}
+		double loadFactor = (double)count / size;
+		if(loadFactor >= LOAD_FACTOR_THRESHOLD) {
+			rehash();
+		}
+	}
+	
+	public boolean mayContain(String key) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		for(Method hf : hfs) {
+			try{
+				int pos = (int)hf.invoke(this, key);
+				if(!check(pos)) {
+					return false;
+				}
+			} catch(RuntimeException re) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+}
