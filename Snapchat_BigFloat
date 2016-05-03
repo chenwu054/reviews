@@ -1,0 +1,75 @@
+/*
+BigFloat addition
+*/
+// num . fraction
+class BigFloat {
+	List<Integer> num;
+	List<Integer> fraction;
+	boolean neg;
+	public BigFloat() {
+		num = new ArrayList<>();
+		fraction = new ArrayList<>();
+		neg = false;
+	}
+	
+	BigFloat add(BigFloat f) {
+		BigFloat ret = new BigFloat();
+		boolean greater = isAbsGreater(this, f);
+		ret.neg = greater ? this.neg : f.neg;
+		// add fraction 
+		long sum = 0, carry = 0;
+		for(int i = Math.max(fraction.size(),f.fraction.size()); i>=0;i--) {
+			sum = (neg?-1:1)*(i<fraction.size()?fraction.get(i):0) + carry + (f.neg?-1:1)*(i<f.fraction.size()?f.fraction.get(i):0);
+			carry = sum / Integer.MAX_VALUE;
+			sum = sum % Integer.MAX_VALUE;
+			if(ret.neg ^ (sum<0)) {
+				carry = ret.neg ? 1 : -1;
+				sum = Integer.MAX_VALUE - Math.abs(sum);
+			}
+			ret.fraction.add((int)sum);
+		}
+		Collections.reverse(ret.fraction);
+		while(ret.fraction.size() > 1 && ret.fraction.get(ret.fraction.size()-1) == 0) {
+			ret.fraction.remove(ret.fraction.size()-1);
+		}
+
+		// add num
+		for(int i = 0;i<Math.max(num.size(), f.num.size());i++) {
+			sum = (neg?-1:1)*(i<num.size()?num.get(i):0) + carry + (f.neg?-1:1)*(i<f.num.size()?f.num.get(i):0);
+			carry = sum / Integer.MAX_VALUE;
+			sum = sum % Integer.MAX_VALUE;
+			if(ret.neg ^ (sum<0)) {
+				carry = ret.neg ? 1 : -1;
+				sum = Integer.MAX_VALUE - Math.abs(sum);
+			}
+			ret.num.add((int)sum);
+		}
+		if(carry != 0) {
+			ret.num.add((int)Math.abs(carry));
+		}
+		while(ret.num.size()>1 && ret.num.get(ret.num.size()-1) == 0) {
+			ret.num.remove(ret.num.size()-1);
+		}
+		// zero
+		if(ret.num.size()==1&&ret.num.get(0)==0&&ret.fraction.size()==1&&ret.fraction.get(0)==0) {
+			ret.neg = false;
+		}
+		return ret;
+	}
+	boolean isAbsGreater(BigFloat a, BigFloat b) {
+		if(a.num.size() != b.num.size()) {
+			return a.num.size()>b.num.size();
+		}
+		for(int i = a.size()-1;i>=0;i--) {
+			if(a.num.get(i)!=b.num.get(i)) {
+				return a.num.get(i) > b.num.get(i);
+			}
+		}
+		for(int i = 0;i<Math.min(a.fraction.size(), b.fraction.size());i++) {
+			if(a.fraction.get(i) != b.fraction.get(i)) {
+				return a.fraction.get(i) > b.fraction.get(i);
+			}
+		}
+		return a.fraction.size() > b.fraction.size();
+	}
+}
