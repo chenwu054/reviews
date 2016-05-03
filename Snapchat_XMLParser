@@ -1,0 +1,112 @@
+/*
+题目问了XML parser, LZ不熟悉XML，就改成了HTML Parser, 本质上一样
+输入是一个tokenizer对象，可以调用其getNextToken()函数获得下一个token, 
+token结构包括name和tag，name就是具体的文字，tag有open,close,text三种，让把所有的token建成一棵树
+比如：
+<html>
+    <user>
+        <id>aa</id>
+        <meta>bb</meta>
+    </user>
+</html>
+
+得到的token就是
+("html","open")
+("user","open")
+("id","open")
+("aa","text")
+("id","close")
+("meta","open")
+("bb","text")
+("meta","close")
+("user","close")
+("html","close")
+*/
+public class XMLParser {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+	
+	}
+	@Test
+	public void testcase1() {
+		String[][] a = {{"html","open"},
+				{"user","open"},
+				{"id","open"},
+				{"aa","text"},
+				{"id","close"},
+				{"meta","open"},
+				{"bb","text"},
+				{"meta","close"},
+				{"user","close"},
+				{"html","close"}};
+		Node root = parseXML(a);
+		bfs(root);
+	}
+	void bfs(Node root) {
+		Queue<Node> q = new LinkedList<>();
+		Queue<Node> next = new LinkedList<>();
+		Queue<Node> temp = null;
+		q.add(root);
+		StringBuilder sb = new StringBuilder();
+		while(!q.isEmpty()) {
+			sb.delete(0, sb.length());
+			while(!q.isEmpty()) {
+				Node cur = q.poll();
+				if(sb.length()>0) {
+					sb.append(", ");
+				}
+				sb.append('[').append(cur.tag);
+				if(cur.text!=null) {
+					sb.append(":"+cur.text);
+				}
+				sb.append(']');
+				for(Node n : cur.next) {
+					next.add(n);
+				}
+			}
+			temp = q;
+			q=next;
+			next = temp;
+			System.out.println(sb.toString());
+		}
+	}
+	class Node {
+		String tag, text;
+		List<Node> next;
+		public Node(String tag) {
+			this.tag = tag;
+			this.text = null;
+			next = new ArrayList<>();
+		}
+	}
+	Node parseXML(String[][] a) {
+		if(a==null||a.length==0) {
+			throw new RuntimeException("Invalid input");
+		}
+		Stack<Node> k = new Stack<>();
+		Node root = null;
+		for(String[] s : a) {
+			if("open".equals(s[1])) {
+				Node newNode = new Node(s[0]);
+				k.push(newNode);
+			} else if("text".equals(s[1])) {
+				if(k.isEmpty()) {
+					throw new RuntimeException("Invalid input");
+				}
+				k.peek().text=s[0];
+			} else { // close
+				if(k.isEmpty()) {
+					throw new RuntimeException("Invalid input");
+				}
+				Node last = k.pop();
+				if(!k.isEmpty()) {
+					k.peek().next.add(last);
+				} else {
+					root = last;
+				}
+			}
+		}
+		return root;
+	}
+}
