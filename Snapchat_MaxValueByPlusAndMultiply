@@ -5,6 +5,7 @@
 */
 // support both positive and negative numbers
 public class MaxValueWIthPlusAndMultiply {
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
@@ -56,23 +57,8 @@ public class MaxValueWIthPlusAndMultiply {
 				int max = dp[i][i] + dp[i+1][i+len];
 				int min = max;
 				for(int j=0;j<len;j++) {
-					max = Math.max(max, dp[i][i+j]+dp[i+j+1][i+len]);
-					max = Math.max(max, dp[i][i+j]*dp[i+j+1][i+len]);
-					max = Math.max(max, dpMin[i][i+j]+dpMin[i+j+1][i+len]);
-					max = Math.max(max, dpMin[i][i+j]*dpMin[i+j+1][i+len]);
-					max = Math.max(max, dp[i][i+j]+dpMin[i+j+1][i+len]);
-					max = Math.max(max, dp[i][i+j]*dpMin[i+j+1][i+len]);
-					max = Math.max(max, dpMin[i][i+j]+dp[i+j+1][i+len]);
-					max = Math.max(max, dpMin[i][i+j]*dp[i+j+1][i+len]);
-					
-					min = Math.min(min, dp[i][i+j]+dp[i+j+1][i+len]);
-					min = Math.min(min, dp[i][i+j]*dp[i+j+1][i+len]);
-					min = Math.min(min, dpMin[i][i+j]+dpMin[i+j+1][i+len]);
-					min = Math.min(min, dpMin[i][i+j]*dpMin[i+j+1][i+len]);
-					min = Math.min(min, dp[i][i+j]+dpMin[i+j+1][i+len]);
-					min = Math.min(min, dp[i][i+j]*dpMin[i+j+1][i+len]);
-					min = Math.min(min, dpMin[i][i+j]+dp[i+j+1][i+len]);
-					min = Math.min(min, dpMin[i][i+j]*dp[i+j+1][i+len]);
+					max = getMax(max, dp[i][i+j], dpMin[i][i+j], dp[i+j+1][i+len], dpMin[i+j+1][i+len]);
+					min = getMin(min, dp[i][i+j], dpMin[i][i+j], dp[i+j+1][i+len], dpMin[i+j+1][i+len]);
 				}
 				dp[i][i+len] = max;
 				dpMin[i][i+len] = min;
@@ -80,4 +66,18 @@ public class MaxValueWIthPlusAndMultiply {
 		}
 		return dp[0][n-1];
 	}
+	int getMax(int max, int a, int b, int c, int d) {
+		max = Math.max(Math.max(a*c, a+c), max);
+		max = Math.max(Math.max(a*d, a+d), max);
+		max = Math.max(Math.max(b*c, b+c), max);
+		max = Math.max(Math.max(b*d, b+d), max);
+		return max;
+	}
+	int getMin(int min, int a, int b, int c, int d) {
+		min = Math.min(Math.min(a*c, a+c), min);
+		min = Math.min(Math.min(a*d, a+d), min);
+		min = Math.min(Math.min(b*c, b+c), min);
+		min = Math.min(Math.min(b*d, b+d), min);
+		return min;
+	}	
 }
