@@ -1,0 +1,83 @@
+/*
+一堆数，中间插入*，+或者括号，求最大值，dp就可以， 但是如果数字全部是正整数的话，
+只用通过判断1的个数是奇数还是偶数来求最大值，0(n)就可以了
+
+*/
+// support both positive and negative numbers
+public class MaxValueWIthPlusAndMultiply {
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Test
+	public void case1() {
+		int[] nums = {0,0};
+		int ret = maxValue(nums);
+		assertTrue(ret == 0);
+	}
+	@Test
+	public void case2() {
+		int[] nums = {1,0};
+		int ret = maxValue(nums);
+		assertTrue(ret == 1);
+	}
+	@Test
+	public void case3() {
+		int[] nums = {-Integer.MIN_VALUE};
+		int ret = maxValue(nums);
+		assertTrue(ret == Integer.MIN_VALUE);
+	}
+	@Test
+	public void case4AllPos() {
+		int[] nums = {5,1,4};
+		int ret = maxValue(nums);
+		assertTrue(ret == 25);
+	}
+	@Test
+	public void case5() {
+		int[] nums = {-5,1,-4};
+		int ret = maxValue(nums);
+		assertTrue(ret == 20);
+	}
+	
+	public int maxValue(int[] num) { // for both max and min
+		if(num==null||num.length==0) {
+			throw new RuntimeException("Invalid input");
+		}
+		int n = num.length;
+		int[][] dp = new int[n][n];
+		int[][] dpMin = new int[n][n];
+		for(int i=0;i<n;i++) {
+			dp[i][i] = num[i];
+			dpMin[i][i] = num[i];
+		}
+		for(int len =1;len<n;len++) {
+			for(int i =0;i<n-len;i++) {
+				int max = dp[i][i] + dp[i+1][i+len];
+				int min = max;
+				for(int j=0;j<len;j++) {
+					max = Math.max(max, dp[i][i+j]+dp[i+j+1][i+len]);
+					max = Math.max(max, dp[i][i+j]*dp[i+j+1][i+len]);
+					max = Math.max(max, dpMin[i][i+j]+dpMin[i+j+1][i+len]);
+					max = Math.max(max, dpMin[i][i+j]*dpMin[i+j+1][i+len]);
+					max = Math.max(max, dp[i][i+j]+dpMin[i+j+1][i+len]);
+					max = Math.max(max, dp[i][i+j]*dpMin[i+j+1][i+len]);
+					max = Math.max(max, dpMin[i][i+j]+dp[i+j+1][i+len]);
+					max = Math.max(max, dpMin[i][i+j]*dp[i+j+1][i+len]);
+					
+					min = Math.min(min, dp[i][i+j]+dp[i+j+1][i+len]);
+					min = Math.min(min, dp[i][i+j]*dp[i+j+1][i+len]);
+					min = Math.min(min, dpMin[i][i+j]+dpMin[i+j+1][i+len]);
+					min = Math.min(min, dpMin[i][i+j]*dpMin[i+j+1][i+len]);
+					min = Math.min(min, dp[i][i+j]+dpMin[i+j+1][i+len]);
+					min = Math.min(min, dp[i][i+j]*dpMin[i+j+1][i+len]);
+					min = Math.min(min, dpMin[i][i+j]+dp[i+j+1][i+len]);
+					min = Math.min(min, dpMin[i][i+j]*dp[i+j+1][i+len]);
+				}
+				dp[i][i+len] = max;
+				dpMin[i][i+len] = min;
+			}
+		}
+		return dp[0][n-1];
+	}
+}
