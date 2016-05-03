@@ -1,4 +1,47 @@
 /*
+给你一个8*8的矩阵，一个起始点，一个终点，和k值，求从起始点到终点走k步有多少种走法。
+这里和我们平时刷题的搜索题不同，这里所有点都可以重复走。我愣了一小会儿，说用bfs搜k层看有多少种结果。
+面试官不满意时间复杂度和空间复杂度太高，要我改进，我说剪枝。
+面试官还是不满意，说这个其实没什么改进，然后提示下说用其他搜索可以省空间，于是就写了个dfs。
+*/
+int[][]s={{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
+public int numOfWays(int n, int m, int xs, int ys, int xe, int ye, int k) {
+// validate
+	int[][][] dp = new int[2][n][m];
+	dp[0][xs][ys]= 1;
+	for(int s = 0;s<k;s++) {
+		for(int i =0;i<n;i++) {
+			for(int j=0;j<m;j++) {
+				if(dist(i,j,xe,ye) <= k) {
+					dp[1-s%2][i][j] = getNeighborSum(dp[s%2],i,j);
+				} else {
+					dp[1-s%2][i][j] = 0;
+				}
+			}
+		}
+	}
+	return dp[k%2][xe][ye];
+}
+int getNeighborSum(int[][] a,int i, int j) {
+	int n = a.length, m= a[0].length;
+	int tot=0;
+	for(int t=0;t<s.length;t++) {
+		int x = i+s[t][0];
+		int y = j+s[t][1];
+		if(x>=0&&y>=0&&x<n&&y<m) {
+			tot += a[x][y];
+		}
+	}
+	return tot;
+}
+int dist(int i1, int j1, int i2, int j2) {
+	int xdiff = Math.abs(i1-i2);
+	int ydiff = Math.abs(j1-j2);
+	return Math.max(ydiff, xdiff);
+}
+
+
+/*
 题是从点A走到点B， 给K步，8个方向都可以走， 问多少种走法。我写了个backtracking 还把自己饶了进去， 
 大哥帮我walk through了 然后好不容易写完了。问怎么improve。
 然后说了DP的思路。没让写。 (BFS)
