@@ -1,0 +1,111 @@
+/*
+1.给一个单核CPU的log，parse log，每一行log三列分别是jobname(String)    start/end(boolean)    timeStamp(long)
+
+name(String)    start/end(boolean)    timeStamp(long) 
+f1                   start                        0
+f2                   start                        2
+f3                   start                        4
+f3                   end                          5
+f2                   end                          8
+f1                   end                          9
+
+上面log的意思是我们在0开始做f1
+在2的时候切换到f2,
+4的时候开始做f3，
+5的时候f3结束
+要返回每个function要用的时间.
+这个input的返回就是
+f1 ： 3. 
+f2 ： 5
+f3 ： 1
+*/
+public class ParseCPULog {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	@Test
+	public void testcase1() {
+		String[][] a = {{"f1","start","0"},
+						{"f2","start","2"},
+						{"f3","start","4"},
+						{"f3","end","5"},
+						{"f2","end","8"},
+						{"f1","end","9"}};
+		Map<String, Long> ret = parseCPU(a);
+		for(String k : ret.keySet()) {
+			System.out.println(k + " : " + ret.get(k));
+		}
+	}
+	@Test
+	public void testcase2() {
+		String[][] a = {{"f1","start","0"},
+						{"f2","start","2"},
+						{"f3","start","4"},
+						{"f3","end","5"},
+						{"f4","start","7"},
+						{"f4","end","8"},
+						{"f3","start","9"},
+						{"f3","end","14"},
+						{"f4","start","14"},
+						{"f4","end","17"},
+						{"f2","end","18"},
+						{"f1","end","19"}};
+		Map<String, Long> ret = parseCPU(a);
+		for(String k : ret.keySet()) {
+			System.out.println(k + " : " + ret.get(k));
+		}
+	}
+	@Test
+	public void testcas32() {
+		String[][] a = {{"f1","start","0"},
+						{"f2","start","2"},
+						{"f3","start","4"},
+						{"f3","end","5"},
+						{"f4","start","7"},
+						{"f5","start","9"},
+						{"f5","end","13"},
+						{"f6","start","14"},
+						{"f6","end","15"},
+						{"f4","end","17"},
+						{"f2","end","18"},
+						{"f1","end","19"}};
+		Map<String, Long> ret = parseCPU(a);
+		for(String k : ret.keySet()) {
+			System.out.println(k + " : " + ret.get(k));
+		}
+	}
+	Map<String, Long> parseCPU(String[][] a) {
+		Stack<String> k = new Stack<>();
+		Stack<Long> used = new Stack<>();
+		Stack<Long> t = new Stack<>();
+		Map<String, Long> map = new HashMap<>();
+		for(String[] s : a) {
+			String name = s[0];
+			long time = Long.parseLong(s[2]);
+			if("start".equals(s[1])) {
+				k.push(s[0]);
+				t.push(time);
+				used.push(0l);
+			} else {
+				if(k.isEmpty() || !k.peek().equals(name)) {
+					throw new RuntimeException("Invalid input");
+				}
+				if(!map.containsKey(name)) {
+					map.put(name, 0l);
+				}
+				long lastTime = t.pop();
+				long lastUsedTime = used.pop();
+				long usedTime = time - lastTime - lastUsedTime;
+				map.put(name, map.get(name) + usedTime);
+				// tot += usedTime;
+				k.pop();
+				if(!used.isEmpty()) {
+					used.push(used.pop() + time - lastTime);
+				}
+			}
+		}
+		return map;
+	}
+}
