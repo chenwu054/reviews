@@ -1,72 +1,100 @@
 /*
+return all the simple words that can not be formed by concatenating other words.
+*/
+public class SimpleCompoundWords {
 
-*/
-/*
-Simple Compound words
-*/
-class Node {
-	boolean isWord;
-	Node[] next;
-	public Node() {
-		isWord = false;
-		next = new Node[26];
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
 	}
-}
-List<String> getSimpleWords(String[] words) {
-	// validate
-	if(words==null) {
-		throw new RuntimeException("Invalid Input");
+	@Test
+	public void testcase1() {
+		String[] a = {"snap", "chat","snapchat"};
+		List<String> ret = getSimpleWords(a);
+		for(String s : ret) {
+			System.out.print(s + ", ");
+		}
+		System.out.println();
 	}
-	List<String> ret = new ArrayList<>();
-	Node root = new Node();
-	for(String w : words) {
-		insert(root, w);
+	
+	@Test
+	public void testcase2() {
+		String[] a = {"snap", "chat","snapchat", "abc", "abcef", "abcabc"}; // one word can be used multiple times
+		List<String> ret = getSimpleWords(a);
+		for(String s : ret) {
+			System.out.print(s + ", ");
+		}
+		System.out.println();
 	}
-	for(String w : words) {
-		boolean c = isCompound(root, w);
-		if(!c) {
-			ret.add(c);
+	
+	class Node {
+		boolean isWord;
+		Node[] next;
+		public Node() {
+			isWord = false;
+			next = new Node[26];
 		}
 	}
-	return ret;
-}
-void insert(Node root, String w) {
-	Node node = root;
-	int i = 0;
-	while(i<w.length()) {
-		char c = w.charAt(i);
-		if(node.next[c-'a'] == null) {
-			node.next[c-'a'] = new Node();
+	List<String> getSimpleWords(String[] words) {
+		// validate
+		if(words==null) {
+			throw new RuntimeException("Invalid Input");
 		}
-		node = node.next[c-'a'];
-		i++;
-	}
-	node.isWord = true;	
-}
-boolean isCompound(Node root, String w) {
-	return isCompound(root, w, 0);
-}
-boolean isCompound(Node root, String w, int start) {
-	if(start==w.length()) {
-		return true;
-	}
-	if(start>w.length()) {
-		return false;
-	}
-	int i = start;
-	Node node = root;
-	while(i<w.length()) {
-		int c = w.charAt(i) - 'a';
-		if(node.next[c] == null) {
-			return false;
+		List<String> ret = new ArrayList<>();
+		Node root = new Node();
+		for(String w : words) {
+			insert(root, w);
 		}
-		node = node.next[c];
-		i++;
-		if(node.isWord) {
-			if(isCompound(root, w, i)) {
-				return true;
+		for(String w : words) {
+			boolean c = isCompound(root, w);
+			if(!c) {
+				ret.add(w);
 			}
 		}
+		return ret;
 	}
-	return false;
+	void insert(Node root, String w) {
+		Node node = root;
+		int i = 0;
+		while(i<w.length()) {
+			char c = w.charAt(i);
+			if(node.next[c-'a'] == null) {
+				node.next[c-'a'] = new Node();
+			}
+			node = node.next[c-'a'];
+			i++;
+		}
+		node.isWord = true;	
+	}
+	boolean isCompound(Node root, String w) {
+		int[] num = {0};
+		boolean v = isCompound(root, w, 0, num);
+		return v && num[0] > 1;
+	}
+	boolean isCompound(Node root, String w, int start, int[] num) {
+		if(start==w.length()) {
+			return true;
+		}
+		if(start>w.length()) {
+			return false;
+		}
+		int i = start;
+		Node node = root;
+		while(i<w.length()) {
+			int c = w.charAt(i) - 'a';
+			if(node.next[c] == null) {
+				return false;
+			}
+			node = node.next[c];
+			i++;
+			if(node.isWord) {
+				num[0]++;
+				if(isCompound(root, w, i, num)) {
+					return true;
+				}
+				num[0]--;
+			}
+		}
+		return false;
+	}
 }
