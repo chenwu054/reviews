@@ -1,0 +1,72 @@
+/*
+
+*/
+/*
+Simple Compound words
+*/
+class Node {
+	boolean isWord;
+	Node[] next;
+	public Node() {
+		isWord = false;
+		next = new Node[26];
+	}
+}
+List<String> getSimpleWords(String[] words) {
+	// validate
+	if(words==null) {
+		throw new RuntimeException("Invalid Input");
+	}
+	List<String> ret = new ArrayList<>();
+	Node root = new Node();
+	for(String w : words) {
+		insert(root, w);
+	}
+	for(String w : words) {
+		boolean c = isCompound(root, w);
+		if(!c) {
+			ret.add(c);
+		}
+	}
+	return ret;
+}
+void insert(Node root, String w) {
+	Node node = root;
+	int i = 0;
+	while(i<w.length()) {
+		char c = w.charAt(i);
+		if(node.next[c-'a'] == null) {
+			node.next[c-'a'] = new Node();
+		}
+		node = node.next[c-'a'];
+		i++;
+	}
+	node.isWord = true;	
+}
+boolean isCompound(Node root, String w) {
+	return isCompound(root, w, 0);
+}
+boolean isCompound(Node root, String w, int start) {
+	if(start==w.length()) {
+		return true;
+	}
+	if(start>w.length()) {
+		return false;
+	}
+	int i = start;
+	Node node = root;
+	while(i<w.length()) {
+		int c = w.charAt(i) - 'a';
+		if(node.next[c] == null) {
+			return false;
+		}
+		node = node.next[c];
+		i++;
+		if(node.isWord) {
+			if(isCompound(root, w, i)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
