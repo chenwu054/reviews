@@ -1,0 +1,71 @@
+/*
+evaluate ternary expression:
+
+right expression evaluated first
+no embeddment for condition
+
+*/
+public class TernaryExpressionEvaluation {
+
+	public static void main(String[] args) {
+
+	}
+	@Test
+	public void testcase2() {
+		TernaryExpressionEvaluation t = new TernaryExpressionEvaluation();
+		String a = "T ? F ? ccc: aaa : bbb";
+		String ret = t.evalTernaryExpression(a);
+		System.out.println(ret);
+	}
+	@Test
+	public void testcase3() {
+		TernaryExpressionEvaluation t = new TernaryExpressionEvaluation();
+		String a = "T ? T : F ? F ? ccc: aaa : T ? bbb : ccc";
+		String ret = t.evalTernaryExpression(a);
+		System.out.println(ret);
+	}
+	@Test
+	public void testcase1() {
+		TernaryExpressionEvaluation t = new TernaryExpressionEvaluation();
+		String a = "T ? aaa : bbb";
+		String ret = t.evalTernaryExpression(a);
+		System.out.println(ret);
+	}
+	String evalTernaryExpression(String str) {
+		if(str==null||str.length()==0) {
+			return null;
+		}
+//		return parse(str, new int[]{0});
+		return parse3(str);
+	}
+	String parse3(String a) {
+		Stack<String> k = new Stack<>();
+		a = a.trim();
+		int idx = a.length()-1;
+		while(idx>=0) {
+			int i = getPreviousStop(a, idx);
+			String str = a.substring(i+1, idx+1).trim();
+			k.push(str);
+			while(i<0 || a.charAt(i) == '?') {
+				int j = getPreviousStop(a, i-1);
+				String condStr = a.substring(j+1, i).trim();
+				boolean cond = condStr.equals("T");
+				String trueResult = k.pop();
+				String falseResult = k.pop();
+				k.push(cond?trueResult:falseResult);
+				i = j;
+				if(i<0) {
+					break;
+				}
+			} 
+			idx = i-1;
+		}
+		return k.pop();
+	}
+	int getPreviousStop(String a, int i) {
+		while(i>=0 && a.charAt(i)!='?' && a.charAt(i)!=':') {
+			i--;
+		}
+		return i;
+	}
+}
