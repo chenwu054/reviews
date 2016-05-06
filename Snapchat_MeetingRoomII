@@ -1,0 +1,107 @@
+/*
+给一个List of meetings, meetings有起始时间，求meetings的arrangement，返回的是哪个meeting Room被排了哪些面试。
+
+*/
+public class RearrangeMeetings {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		RearrangeMeetings rm = new RearrangeMeetings();
+		List<Meeting> list = new ArrayList<>();
+		Random r = new Random();
+		for(int i = 0;i<10;i++) {
+			int t1 = r.nextInt(100);
+			int t2 = r.nextInt(100);
+			Meeting newM = new Meeting(i, Math.min(t1, t2), Math.max(t1, t2));
+			list.add(newM);
+		}
+		List<List<Meeting>> ret = rm.arrangeMeetings(list);
+		for(List<Meeting> ms : ret) {
+			for(Meeting m:ms) {
+				System.out.print(m + ", ");
+			}
+			System.out.println();
+		}
+	}
+	static class Meeting {
+		int start, end;
+		int mtgId, roomId;
+		public Meeting(int id, int s, int e) {
+			mtgId = id;
+			start = s;
+			end = e;
+			roomId = -1;
+		}
+		public String toString() {
+			return "[" + start + "," + end + "]";
+		}
+	}
+	static class Time {
+		boolean isStart;
+		int time;
+		int mtgId;
+		public Time(int t, int id, boolean start) {
+			isStart = start;
+			time = t;
+			mtgId = id;
+		}
+	}
+	List<List<Meeting>> arrangeMeetings(List<Meeting> meetings) {
+		List<List<Meeting>> ret = new ArrayList<>();
+		Map<Integer, Meeting> map = new HashMap<>();
+		List<Time> times = initTimes(meetings, map);
+		Collections.sort(times, new Comparator<Time>() {
+			public int compare(Time a, Time b) {
+				if(a.time != b.time) {
+					return a.time - b.time;
+				}
+				return !a.isStart?-1:1;
+			}
+		});
+		int roomId = 0;
+		Set<Integer> avail = new HashSet<>();
+//		Set<Integer> used = new HashSet<>();
+		// new a room if all room are occupied
+		for(int i =0;i<times.size();i++) {
+			Time t = times.get(i);
+			if(t.isStart) {
+				if(avail.size() > 0) { // has room 
+					int rm = getOneRoom(avail);
+					map.get(t.mtgId).roomId = rm;
+					avail.remove(rm);
+					// used.add(rm);
+				} else {
+					map.get(t.mtgId).roomId = roomId++;
+					// used.add(roomId++);
+				}
+			} else {
+				int rm = map.get(t.mtgId).roomId;
+				// used.remove(rm);
+				avail.add(rm);
+			}
+		}
+		// arrange rooms
+		for(Meeting m : meetings) {
+			while(ret.size() <= m.roomId) {
+				ret.add(new ArrayList<Meeting>());
+			}
+			ret.get(m.roomId).add(map.get(m.mtgId));
+		}
+		return ret;
+	}
+	int getOneRoom(Set<Integer> s) {
+		for(Integer a : s) {
+			return a;
+		}
+		return 0;
+	}
+	List<Time> initTimes(List<Meeting> meetings, Map<Integer, Meeting> map) {
+		List<Time> times = new ArrayList<>();
+		for(Meeting m : meetings) {
+			times.add(new Time(m.start, m.mtgId, true));
+			times.add(new Time(m.end, m.mtgId, false));
+			map.put(m.mtgId, m);
+		}
+		return times;
+	}
+}
