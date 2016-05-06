@@ -1,0 +1,63 @@
+/*
+
+*/
+public class CheckDeadLock {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+	}
+	
+	boolean hasDeadLock(String[][] a) {
+		if(a==null||a.length==0) {
+			throw new RuntimeException("Invalid input");
+		}
+		Map<String, Set<String>> thread = new HashMap<>();
+		Map<String, Set<String>> mutex = new HashMap<>();
+		parseIput(a, thread, mutex);
+		Set<String> u = new HashSet<String>();
+		Set<String> v = new HashSet<String>();
+		for(String start : thread.keySet()) {
+			boolean cycle = dfs(start, thread, mutex, v, u);
+			if(cycle) {
+				return true;
+			}
+		}
+		return false;
+	}
+	boolean dfs(String start, Map<String, Set<String>> thread, Map<String, Set<String>>  mutex, Set<String> v, Set<String> u) {
+		if(v.contains(start)) {
+			return true;
+		}
+		if(u.contains(start)) {
+			return false;
+		}
+		v.add(start);
+		if(thread.containsKey(start)) {
+			for(String m : thread.get(start)) {
+				if(mutex.containsKey(m)) {
+					for(String next : mutex.get(m)) {
+						boolean cycle = dfs(next, thread, mutex, v, u);
+						if(cycle) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		v.remove(start);
+		u.add(start);
+		return false;
+	}
+	void parseIput(String[][] a, Map<String, Set<String>> thread, Map<String, Set<String>> mutex) {
+		for(String[] b : a) {
+			if(!thread.containsKey(b[0])) {
+				thread.put(b[0], new HashSet<String>());
+			}
+			thread.get(b[0]).add(b[1]);
+			if(!mutex.containsKey(b[1])) {
+				mutex.put(b[1], new HashSet<String>());
+			}
+			mutex.get(b[1]).add(b[0]);
+		}
+	}
+}
