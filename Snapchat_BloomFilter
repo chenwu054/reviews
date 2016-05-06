@@ -37,7 +37,7 @@ public class BloomFilter {
 		if(pos<0 || pos>=size) {
 			throw new RuntimeException("Invalid input");
 		}
-		filter[pos>>5] |= (1<<(pos%(1<<5)));
+		filter[pos>>5] |= (1<<(pos%(1<<5))); // filter[pos>>5] |= (1<<(pos&((1<<5)-1))); 
 	}
 	public void add(String str) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		count++;
