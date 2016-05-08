@@ -1,0 +1,90 @@
+/*
+# Tasks: 1, 1, 2, 1
+# Recovery interva (cooldown): 2
+# Output: 7  (order is 1 _ _ 1 2 _ 1)
+
+# Example 2
+
+# Tasks: 1, 2, 3, 1, 2, 3
+# Recovery interval (cooldown): 3. 鐣欏鐢宠璁哄潧-涓€浜╀笁鍒嗗湴
+# Output: 7  (order is 1 2 3 _ 1 2 3)
+
+# Example 3
+
+# Tasks: 1, 2, 3 ,4, 5, 6, 2, 4, 6, 1, 2, 4
+# Recovery interval (cooldown): 6. From 1point 3acres bbs
+# Output: 18  (1 2 3 4 5 6 _ _ 2 _ 4 _ 6 1 _ 2 _ 4)
+
+*/
+public class CoolTime {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Test
+	public void testcase1() {
+		int[] tasks = {1,1,2,1};
+		int time = 2;
+		int ret = calculateTotTime(tasks, time);
+		System.out.println(ret);
+	}
+	
+	@Test
+	public void testcase2() {
+		int[] tasks = {1,2,3,1,2,3};
+		int time = 3;
+		int ret = calculateTotTime(tasks, time);
+		System.out.println(ret);
+	}
+	@Test
+	public void testcase3() {
+		int[] tasks = {1, 2, 3 ,4, 5, 6, 2, 4, 6, 1, 2, 4};
+		int time = 6;
+		int ret = calculateTotTime(tasks, time);
+		System.out.println(ret);
+	}
+	
+	int calculateTotTime(int[] tasks, int time) {
+		if(tasks.length==0) {
+			return 0;
+		}
+		Map<Integer, Integer> map = new HashMap<>();
+		int currentTime = 0;
+		for(int i = 0;i<tasks.length;i++) {
+			int t = tasks[i];
+			if(map.containsKey(t)) {
+				int len = currentTime - map.get(t) - 1;
+				currentTime+= Math.max(time - len, 0);
+			}
+			map.put(t, currentTime);
+			currentTime++;
+		}
+		return currentTime;
+	}
+	
+	int printTotTime(int[] tasks, int time) {
+		if(tasks.length==0) {
+			return 0;
+		}
+		Map<Integer, Integer> map = new HashMap<>();
+		int currentTime = 0;
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0;i<tasks.length;i++) {
+			int t = tasks[i];
+			if(map.containsKey(t)) {
+				int len = currentTime - map.get(t) - 1;
+				int diff =  Math.max(time - len, 0);
+				currentTime+=diff;
+				for(int j=0;j<diff;j++) {
+					sb.append("_,");
+				}
+			}
+			map.put(t, currentTime);
+			sb.append(t).append(',');
+			currentTime++;
+		}
+		return currentTime;
+	}
+	
+}
