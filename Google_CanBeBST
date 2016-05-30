@@ -1,0 +1,41 @@
+/*
+check if a BT can be converted to BST by only swapping children of any nodes.
+
+*/
+boolean canBeBST(TreeNode root) {
+  boolean[] ret = {true};
+  helper(root, ret);
+  return ret[0];
+}
+int[] helper(TreeNode root, boolean[] bst) {
+  if(root == null || !bst[0]) {
+    return null;
+  }
+  int[] left == helper(root.left);
+  int[] right == helper(root.right);
+  int[] ret = new int[2]{root.val, root.val};
+  if(left==null && right == null) {
+    return ret;
+  } else if(left==null || right==null) {
+    int[] notNull = left==null?right:left;
+    if(overlap(notNull[0], notNull[1], root.val, root.val)) {
+      bst[0] = false;
+    } else {
+      ret[0] = Math.min(ret[0], notNull[0]);
+      ret[1] = Math.min(ret[1], notNull[1]);
+    }
+  } else {
+    if(overlap(left[0], left[1], root.val, root.val) ||
+     overlap(right[0], right[1], root.val, root.val ||
+     overlap(left[0], left[1], right[0], right[1])) {
+      bst[0] = false;
+    } else {
+      ret[0] = Math.min(left[0], right[0]);
+      ret[1] = Math.min(left[1], right[1]);
+    }
+  }
+  return ret;
+}
+boolean overlap(int s1, int e1, int s2, int e2) {
+  return s1<=e2 && s2<=e1;
+}
