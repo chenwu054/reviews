@@ -27,7 +27,8 @@ int[] helper(TreeNode root, boolean[] bst) {
   } else {
     if(overlap(left[0], left[1], root.val, root.val) ||
      overlap(right[0], right[1], root.val, root.val ||
-     overlap(left[0], left[1], right[0], right[1])) {
+     overlap(left[0], left[1], right[0], right[1]) ||
+     (!overlap(root.val, root.val, left[1], right[0]) && !overlap(root.val,root.val,right[1], left[0]))) {
       bst[0] = false;
     } else {
       ret[0] = Math.min(left[0], right[0]);
